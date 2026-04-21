@@ -1,4 +1,4 @@
-package org.example;
+package com.monitoreoiot.db;
 import java.sql.*;
 import java.util.Properties;
 

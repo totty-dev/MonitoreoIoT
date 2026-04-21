@@ -1,4 +1,5 @@
-package org.example;
+package com.monitoreoiot;
+import com.monitoreoiot.db.DataBase;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
