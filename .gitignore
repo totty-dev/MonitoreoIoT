@@ -40,3 +40,4 @@ build/
 *.lck
 paho*/
 .idea/
+src/main/resources/config.properties
