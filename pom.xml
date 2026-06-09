@@ -46,7 +46,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>com.monitoreoiot.Main</mainClass>
+                    <mainClass>com.monitoreoiot.MonitorIoT</mainClass>
                 </configuration>
             </plugin>
         </plugins>

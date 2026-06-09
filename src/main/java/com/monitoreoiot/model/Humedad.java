@@ -10,11 +10,11 @@ public class Humedad {
         this.hum = hum;
     }
 
-    public float gethum(){
+    public float getHum(){
         return hum;
     }
 
-    public float sethum(){
-        return hum;
+    public void setHum(float hum){
+        this.hum = hum;
     }
 }

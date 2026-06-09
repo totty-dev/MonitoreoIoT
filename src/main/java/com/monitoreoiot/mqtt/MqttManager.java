@@ -7,16 +7,14 @@ import org.eclipse.paho.client.mqttv3.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.Properties;
 
 public class MqttManager{
-    private final String mqttBroker;
-    private final String mqttClientid;
-    public MqttClient mqttClient;
-    private final DataBaseManager db = new DataBaseManager();
+    private final MqttClient mqttClient;
+    private final MqttMessage mqttMsg;
+    private final DataBaseManager db;
 
-    public MqttManager(){
+    public MqttManager() throws MqttException{
         Properties props = new Properties();
         try (InputStream input = MqttManager.class.getClassLoader()
                 .getResourceAsStream("config.properties")) {
@@ -24,22 +22,38 @@ public class MqttManager{
         } catch (IOException e) {
             throw new RuntimeException("No se pudo cargar config.properties", e);
         }
-        this.mqttBroker = props.getProperty("mqtt.broker");
-        this.mqttClientid = MqttClient.generateClientId();
+        String mqttBroker = props.getProperty("mqtt.broker");
+        String mqttClientid = MqttClient.generateClientId();
+        this.mqttClient = new MqttClient(mqttBroker, mqttClientid);
+        this.db = new DataBaseManager();
+        this.mqttMsg = new MqttMessage();
+    }
+
+    public MqttManager(DataBaseManager db) throws MqttException{
+        Properties props = new Properties();
+        try (InputStream input = MqttManager.class.getClassLoader()
+                .getResourceAsStream("config.properties")) {
+            props.load(input);
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo cargar config.properties", e);
+        }
+        String mqttBroker = props.getProperty("mqtt.broker");
+        String mqttClientid = MqttClient.generateClientId();
+        this.mqttClient = new MqttClient(mqttBroker, mqttClientid);
+        this.db = db;
+        this.mqttMsg = new MqttMessage();
     }
 
     public void conect(){
         try {
-            MqttClient mqttClient = new MqttClient(mqttBroker, mqttClientid);
             MqttConnectOptions mqttOptions = new MqttConnectOptions();
             mqttOptions.setKeepAliveInterval(60);
             mqttOptions.setAutomaticReconnect(true);
             mqttOptions.setCleanSession(true);
             mqttClient.connect(mqttOptions);
-            this.mqttClient = mqttClient;
             this.callback();
         } catch (MqttException e) {
-            System.out.println("Error al insertar en DB: " + e.getMessage());
+            System.out.println("Error al conectar mqtt: " + e.getMessage());
         }
     }
 
@@ -50,15 +64,14 @@ public class MqttManager{
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String msg = new String(message.getPayload());
                     System.out.println("Received message: " + msg);
-                    if (topic.equals("temperaturayhumedadcar")) {
+                    if (topic.equals("tempyhum")) {
                         String[] tempyhum = msg.split(",");
                         Temperatura temp = new Temperatura(Float.parseFloat(tempyhum[0]));
                         Humedad hum = new Humedad(Float.parseFloat(tempyhum[1]));
-                        try {
-                            db.insertTempyHum(temp,hum);
-                        } catch (SQLException e) {
-                            System.out.println("Error al insertar en DB: " + e.getMessage());
-                        }
+                        db.insertTempyHum(temp,hum);
+                    }
+                    if (topic.equals("luz")) {
+                        db.insertLuz(msg);
                     }
                 }
 
@@ -73,5 +86,20 @@ public class MqttManager{
                 }
             });
         }
+    }
+
+    public void subscribe(String topic, int qos) throws MqttException{
+        mqttClient.subscribe(topic, qos);
+    }
+
+    public void publish(String topic,String msg, int qos) throws MqttException {
+        mqttMsg.setPayload(msg.getBytes());
+        mqttMsg.setQos(qos);
+        mqttClient.publish(topic, mqttMsg);
+    }
+
+    public void disconnect() throws MqttException{
+        mqttClient.disconnect();
+        mqttClient.close();
     }
 }

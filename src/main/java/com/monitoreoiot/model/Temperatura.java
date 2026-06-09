@@ -9,12 +9,13 @@ public class Temperatura {
     public Temperatura(float temp){
         this.temp = temp;
     }
-    public float gettemp(){
+
+    public float getTemp(){
         return temp;
     }
 
-    public float settemp(){
-        return temp;
+    public void setTemp(float temp){
+        this.temp = temp;
     }
 
     public float toFahrenheit(){
