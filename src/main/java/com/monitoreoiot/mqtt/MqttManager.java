@@ -14,21 +14,6 @@ public class MqttManager{
     private final MqttMessage mqttMsg;
     private final DataBaseManager db;
 
-    public MqttManager() throws MqttException{
-        Properties props = new Properties();
-        try (InputStream input = MqttManager.class.getClassLoader()
-                .getResourceAsStream("config.properties")) {
-            props.load(input);
-        } catch (IOException e) {
-            throw new RuntimeException("No se pudo cargar config.properties", e);
-        }
-        String mqttBroker = props.getProperty("mqtt.broker");
-        String mqttClientid = MqttClient.generateClientId();
-        this.mqttClient = new MqttClient(mqttBroker, mqttClientid);
-        this.db = new DataBaseManager();
-        this.mqttMsg = new MqttMessage();
-    }
-
     public MqttManager(DataBaseManager db) throws MqttException{
         Properties props = new Properties();
         try (InputStream input = MqttManager.class.getClassLoader()
