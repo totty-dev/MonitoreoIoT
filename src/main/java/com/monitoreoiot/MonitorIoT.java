@@ -7,8 +7,10 @@ import com.sun.net.httpserver.HttpServer;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.Properties;
 
 
 public class MonitorIoT {
@@ -17,7 +19,15 @@ public class MonitorIoT {
         try {
             DataBaseManager db = new DataBaseManager();
 
-            HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+            Properties props = new Properties();
+            try (InputStream input = DataBaseManager.class.getClassLoader()
+                    .getResourceAsStream("config.properties")) {
+                props.load(input);
+            } catch (IOException e) {
+                throw new RuntimeException("No se pudo cargar config.properties", e);
+            }
+            String ip = props.getProperty("ip.rasp");
+            HttpServer server = HttpServer.create(new InetSocketAddress(ip,8080), 0);
 
             server.createContext("/api/temperaturas", exchange -> {
                 String json = db.getTempyHumJson();

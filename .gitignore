@@ -1,6 +1,3 @@
-target/
-!target/MonitoreoIoT-1.0-SNAPSHOT.jar
-
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
