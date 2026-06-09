@@ -27,7 +27,7 @@ public class MonitorIoT {
                 throw new RuntimeException("No se pudo cargar config.properties", e);
             }
             String ip = props.getProperty("ip.rasp");
-            HttpServer server = HttpServer.create(new InetSocketAddress(ip,8080), 0);
+            HttpServer server = HttpServer.create(new InetSocketAddress(ip,8082), 0);
 
             server.createContext("/api/temperaturas", exchange -> {
                 String json = db.getTempyHumJson();
