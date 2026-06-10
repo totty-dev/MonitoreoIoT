@@ -5,6 +5,16 @@ services:
       dockerfile: backend.Dockerfile
     ports:
       - "8082:8082"
+    environment:
+      - DB_URL=
+      - DB_USER=
+      - DB_PASSWORD=
+      - MQTT_BROKER=
+      - MQTT_TOPIC1=
+      - MQTT_TOPIC2=
+      - SERVER_PORT=
+      - SERVER_IP=
+      - SERVER_CONTEXT_PATH=
     restart: unless-stopped
 
   frontend:

@@ -1,14 +1,13 @@
 package com.monitoreoiot;
 
+import com.monitoreoiot.config.Config;
 import com.monitoreoiot.db.DataBaseManager;
 import com.monitoreoiot.mqtt.MqttManager;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Properties;
@@ -17,21 +16,15 @@ import java.util.Properties;
 public class MonitorIoT {
     public static void main(String[] args) {
         java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("UTC"));
+
         try {
             DataBaseManager db = new DataBaseManager();
 
-            Properties props = new Properties();
-            try (InputStream input = DataBaseManager.class.getClassLoader()
-                    .getResourceAsStream("config.properties")) {
-                props.load(input);
-            } catch (IOException e) {
-                throw new RuntimeException("No se pudo cargar config.properties", e);
-            }
-            int port = Integer.parseInt(props.getProperty("apiweb.port"));
-            String ip = props.getProperty("apiweb.ip");
-            String contextpath = props.getProperty("apiweb.contextPath");
-            String topic1 = props.getProperty("mqtt.topic1");
-            String topic2 = props.getProperty("mqtt.topic2");
+            int port = Config.getServerPort();
+            String ip = Config.getServerIp();
+            String contextpath = Config.getServerContextPath();
+            String topic1 = Config.getMqttTopic1();
+            String topic2 = Config.getMqttTopic2();
 
             HttpServer server = HttpServer.create(new InetSocketAddress(ip,port), 0);
 

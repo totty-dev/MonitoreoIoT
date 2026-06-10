@@ -34,7 +34,6 @@
 
     <build>
         <plugins>
-            <!-- Plugin para ejecutar la app con mvn exec:java (opcional) -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -43,8 +42,6 @@
                     <mainClass>com.monitoreoiot.MonitorIoT</mainClass>
                 </configuration>
             </plugin>
-
-            <!-- Plugin que genera el fat JAR ejecutable -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -53,8 +50,8 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <finalName>app</finalName>          <!-- nombre final sin versión -->
-                    <appendAssemblyId>false</appendAssemblyId>  <!-- evita que añada "-jar-with-dependencies" -->
+                    <finalName>app</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
                             <mainClass>com.monitoreoiot.MonitorIoT</mainClass>

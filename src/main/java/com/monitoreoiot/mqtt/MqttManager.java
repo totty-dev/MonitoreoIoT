@@ -1,5 +1,6 @@
 package com.monitoreoiot.mqtt;
 
+import com.monitoreoiot.config.Config;
 import com.monitoreoiot.db.DataBaseManager;
 import com.monitoreoiot.model.Humedad;
 import com.monitoreoiot.model.Temperatura;
@@ -15,14 +16,7 @@ public class MqttManager{
     private final DataBaseManager db;
 
     public MqttManager(DataBaseManager db) throws MqttException{
-        Properties props = new Properties();
-        try (InputStream input = MqttManager.class.getClassLoader()
-                .getResourceAsStream("config.properties")) {
-            props.load(input);
-        } catch (IOException e) {
-            throw new RuntimeException("No se pudo cargar config.properties", e);
-        }
-        String mqttBroker = props.getProperty("mqtt.broker");
+        String mqttBroker = Config.getMqttBroker();
         String mqttClientid = MqttClient.generateClientId();
         this.mqttClient = new MqttClient(mqttBroker, mqttClientid);
         this.db = db;

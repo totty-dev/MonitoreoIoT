@@ -1,5 +1,6 @@
 package com.monitoreoiot.db;
 
+import com.monitoreoiot.config.Config;
 import com.monitoreoiot.model.Humedad;
 import com.monitoreoiot.model.Temperatura;
 
@@ -13,15 +14,11 @@ public class DataBaseManager {
 
     private void conect() throws SQLException{
         Properties props = new Properties();
-        try (InputStream input = DataBaseManager.class.getClassLoader()
-                .getResourceAsStream("config.properties")) {
-            props.load(input);
-        } catch (IOException e) {
-            throw new RuntimeException("No se pudo cargar config.properties", e);
-        }
-        String URL = props.getProperty("db.url");
-        String USER = props.getProperty("db.user");
-        String PASSWORD = props.getProperty("db.password");
+
+        String URL = Config.getDbUrl();
+        String USER = Config.getDbUser();
+        String PASSWORD = Config.getDbPassword();
+
         props.setProperty("user", USER);
         props.setProperty("password", PASSWORD);
         props.setProperty("options", "-c TimeZone=UTC");
