@@ -5,7 +5,7 @@ services:
       dockerfile: backend.Dockerfile
       no_cache: true
     ports:
-      - "8082:8080"
+      - "8082:8082"
     restart: unless-stopped
 
   frontend:
@@ -14,5 +14,5 @@ services:
       dockerfile: frontend.Dockerfile
       no_cache: true
     ports:
-      - "8081:80"
+      - "8081:8081"
     restart: unless-stopped
