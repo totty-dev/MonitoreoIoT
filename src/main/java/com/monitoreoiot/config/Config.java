@@ -7,7 +7,6 @@ import java.util.Properties;
 public class Config {
     public static Properties config;
 
-
     static  {
         Properties defaults = new Properties();
         try (InputStream input = Config.class.getClassLoader().getResourceAsStream("config.properties")) {
@@ -53,6 +52,7 @@ public class Config {
         return config.getProperty("SERVER_CONTEXT_PATH");
     }
     public static int getServerPort()     {
-        return Integer.parseInt(config.getProperty("SERVER_PORT"));
+        String port = config.getProperty("SERVER_PORT");
+        return ((port != null) && (port.matches("\\d+"))) ? Integer.parseInt(port) : 8082;
     }
 }

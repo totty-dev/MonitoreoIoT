@@ -10,8 +10,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.Properties;
-
 
 public class MonitorIoT {
     public static void main(String[] args) {
@@ -63,6 +61,7 @@ public class MonitorIoT {
             throw new RuntimeException(e);
         }
     }
+
     private static void sendResponse(HttpExchange exchange, String json) throws IOException {
         exchange.getResponseHeaders().add("Content-Type", "application/json");
         exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");

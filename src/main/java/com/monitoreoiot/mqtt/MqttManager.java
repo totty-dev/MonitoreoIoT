@@ -6,10 +6,6 @@ import com.monitoreoiot.model.Humedad;
 import com.monitoreoiot.model.Temperatura;
 import org.eclipse.paho.client.mqttv3.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 public class MqttManager{
     private final MqttClient mqttClient;
     private final MqttMessage mqttMsg;
@@ -43,13 +39,13 @@ public class MqttManager{
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String msg = new String(message.getPayload());
                     System.out.println("Received message: " + msg);
-                    if (topic.equals("tempyhum")) {
+                    if (topic.equals(Config.getMqttTopic1())) {
                         String[] tempyhum = msg.split(",");
                         Temperatura temp = new Temperatura(Float.parseFloat(tempyhum[0]));
                         Humedad hum = new Humedad(Float.parseFloat(tempyhum[1]));
                         db.insertTempyHum(temp,hum);
                     }
-                    if (topic.equals("luz")) {
+                    if (topic.equals(Config.getMqttTopic2())) {
                         db.insertLuz(msg);
                     }
                 }

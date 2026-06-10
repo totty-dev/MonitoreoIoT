@@ -4,8 +4,6 @@ import com.monitoreoiot.config.Config;
 import com.monitoreoiot.model.Humedad;
 import com.monitoreoiot.model.Temperatura;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.*;
 import java.util.Properties;
 
