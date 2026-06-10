@@ -7,10 +7,8 @@ import com.sun.net.httpserver.HttpServer;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.util.Properties;
 
 
 public class MonitorIoT {
@@ -39,11 +37,6 @@ public class MonitorIoT {
             mqtt.conect();
             mqtt.subscribe("tempyhum",0);
             mqtt.subscribe("luz",0);
-            System.out.println("Press Enter to disconnect");
-            System.in.read();
-            mqtt.disconnect();
-            server.stop(0);
-
         } catch (MqttException e) {
             System.out.println("Error Mqtt: " + e.getMessage());
         } catch (IOException e) {

@@ -1,6 +1,0 @@
-com\monitoreoiot\MonitorIoT.class
-com\monitoreoiot\mqtt\MqttManager.class
-com\monitoreoiot\model\Temperatura.class
-com\monitoreoiot\model\Humedad.class
-com\monitoreoiot\db\DataBaseManager.class
-com\monitoreoiot\mqtt\MqttManager$1.class
