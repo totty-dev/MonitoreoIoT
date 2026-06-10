@@ -35,52 +35,29 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <mainClass>com.monitoreoiot.MonitorIoT</mainClass>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <id>default-jar</id>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <artifactId>maven-shade-plugin</artifactId>
                 <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <archive>
-                                <manifest>
-                                    <mainClass>com.monitoreoiot.MonitorIoT</mainClass>
-                                </manifest>
-                            </archive>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
+                            <!-- Evita generar el pom reducido (más limpio) -->
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <!-- Nombre final del JAR -->
                             <finalName>app</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
+                            <!-- Fuerza a que el JAR sombreado sea el principal -->
+                            <shadedArtifactAttached>false</shadedArtifactAttached>
+                            <!-- (Opcional) Define explícitamente la salida -->
+                            <outputFile>${project.build.directory}/app.jar</outputFile>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.monitoreoiot.MonitorIoT</mainClass>
+                                </transformer>
+                            </transformers>
                         </configuration>
                     </execution>
                 </executions>
