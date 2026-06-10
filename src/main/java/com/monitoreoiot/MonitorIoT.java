@@ -8,6 +8,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 
@@ -31,7 +32,7 @@ public class MonitorIoT {
 
             server.setExecutor(null);
             server.start();
-            System.out.println("API corriendo en http://localhost:8080");
+            System.out.println("API corriendo en http://" + InetAddress.getLocalHost().getHostAddress() + ":8082");
 
             MqttManager mqtt = new MqttManager(db);
             mqtt.conect();
