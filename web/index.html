@@ -1,12 +1,58 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>MonitorIoT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Monitor IoT | Temperatura, Humedad y Luz</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h2>Temp</h2>
-    <h2>Hum</h2>
+<div class="container">
+    <header>
+        <h1>🌦️ Monitor IoT</h1>
+        <p>Estación ambiental | Datos en tiempo real</p>
+    </header>
+
+    <div class="cards">
+        <!-- Tarjeta Temperatura -->
+        <div class="card temp-card">
+            <div class="card-icon">🌡️</div>
+            <div class="card-label">Temperatura</div>
+            <div class="card-value" id="tempValue">--</div>
+            <div class="card-unit">°C</div>
+            <div class="card-footer">Última medición</div>
+        </div>
+
+        <!-- Tarjeta Humedad -->
+        <div class="card hum-card">
+            <div class="card-icon">💧</div>
+            <div class="card-label">Humedad</div>
+            <div class="card-value" id="humValue">--</div>
+            <div class="card-unit">%</div>
+            <div class="card-footer">Última medición</div>
+        </div>
+
+        <!-- Tarjeta Luz -->
+        <div class="card light-card">
+            <div class="card-icon" id="lightIcon">💡</div>
+            <div class="card-label">Iluminación</div>
+            <div class="card-value" id="lightValue">--</div>
+            <div class="card-unit">(estado)</div>
+            <div class="card-footer">Detección de movimiento/luz</div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <span>🔄 Actualización automática cada 5 segundos</span>
+        <span class="last-update" id="lastUpdate">--:--:--</span>
+    </div>
+
+    <footer>
+        <p>Sensor DHT11 + Sensor de luz APDS9960 | MQTT + PostgreSQL</p>
+    </footer>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
