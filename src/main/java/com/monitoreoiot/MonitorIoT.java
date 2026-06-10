@@ -8,7 +8,6 @@ import com.sun.net.httpserver.HttpServer;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.*;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public class MonitorIoT {
@@ -18,13 +17,9 @@ public class MonitorIoT {
         try {
             DataBaseManager db = new DataBaseManager();
 
-            int port = Config.getServerPort();
-            String ip = Config.getServerIp();
             String contextpath = Config.getServerContextPath();
-            String topic1 = Config.getMqttTopic1();
-            String topic2 = Config.getMqttTopic2();
 
-            HttpServer server = HttpServer.create(new InetSocketAddress(ip,port), 0);
+            HttpServer server = HttpServer.create(new InetSocketAddress(Config.getServerIp(), Config.getServerPort()), 0);
 
             server.createContext(contextpath + "/temperaturas", exchange -> {
                 String json = db.getTempyHumJson();
@@ -38,18 +33,11 @@ public class MonitorIoT {
 
             server.setExecutor(null);
             server.start();
-            String hostIp = "desconocida";
-            try {
-                hostIp = InetAddress.getByName("host.docker.internal").getHostAddress();
-            } catch (Exception e) {
-                System.err.println("No se pudo resolver host.docker.internal: " + e.getMessage());
-            }
-            System.out.println("API corriendo en http://" + hostIp + ":" + Config.getServerPort());
 
             MqttManager mqtt = new MqttManager(db);
             mqtt.conect();
-            mqtt.subscribe(topic1,0);
-            mqtt.subscribe(topic2,0);
+            mqtt.subscribe(Config.getMqttTopic1(),0);
+            mqtt.subscribe(Config.getMqttTopic2(),0);
 
             Object lock = new Object();
             synchronized (lock) {

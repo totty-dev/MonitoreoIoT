@@ -36,6 +36,9 @@ public class Config {
     public static String getMqttTopic2()  {
         return config.getProperty("MQTT_TOPIC2");
     }
+    public static String getDbName()     {
+        return config.getProperty("DB_NAME");
+    }
     public static String getDbUrl()       {
         return config.getProperty("DB_URL");
     }

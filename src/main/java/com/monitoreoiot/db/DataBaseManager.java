@@ -13,7 +13,7 @@ public class DataBaseManager {
     private void conect() throws SQLException{
         Properties props = new Properties();
 
-        String URL = Config.getDbUrl();
+        String URL = Config.getDbUrl() + Config.getDbName();
         String USER = Config.getDbUser();
         String PASSWORD = Config.getDbPassword();
 

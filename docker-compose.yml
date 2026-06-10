@@ -8,6 +8,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
+      - DB_NAME=
       - DB_URL=
       - DB_USER=
       - DB_PASSWORD=
@@ -15,7 +16,6 @@ services:
       - MQTT_TOPIC1=
       - MQTT_TOPIC2=
       - SERVER_PORT=
-      - SERVER_IP=
       - SERVER_CONTEXT_PATH=
     restart: unless-stopped
 
