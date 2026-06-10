@@ -114,6 +114,24 @@ header p {
     color: #ffdd77;
 }
 
+/* ----- Ajuste para el texto de iluminación (ENCENDIDA / APAGADA) ----- */
+.light-card .card-value {
+    font-size: 1.8rem;      /* Tamaño más pequeño para que quepa en una línea */
+    white-space: nowrap;     /* Evita que se corte en varias líneas */
+    overflow-x: auto;        /* Permite scroll horizontal solo si es necesario */
+    overflow-y: hidden;
+    padding: 0 0.2rem;
+}
+
+/* En pantallas muy pequeñas, permitimos que el texto se ajuste */
+@media (max-width: 480px) {
+    .light-card .card-value {
+        font-size: 1.5rem;
+        white-space: normal;
+        word-break: break-word;
+    }
+}
+
 .status-bar {
     background: rgba(0, 0, 0, 0.4);
     border-radius: 2rem;
@@ -142,7 +160,7 @@ footer {
     font-size: 0.7rem;
 }
 
-/* Responsive */
+/* Responsive general */
 @media (max-width: 768px) {
     body {
         padding: 1rem;
