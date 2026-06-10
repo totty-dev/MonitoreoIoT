@@ -37,10 +37,21 @@ public class MonitorIoT {
             mqtt.conect();
             mqtt.subscribe("tempyhum",0);
             mqtt.subscribe("luz",0);
+
+            Object lock = new Object();
+            synchronized (lock) {
+                lock.wait();
+            }
+
+            mqtt.disconnect();
+            server.stop(0);
+
         } catch (MqttException e) {
             System.out.println("Error Mqtt: " + e.getMessage());
         } catch (IOException e) {
             System.out.println("Error IO: " + e.getMessage());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
     private static void sendResponse(HttpExchange exchange, String json) throws IOException {
