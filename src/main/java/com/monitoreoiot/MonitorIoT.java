@@ -7,9 +7,11 @@ import com.sun.net.httpserver.HttpServer;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.Properties;
 
 
 public class MonitorIoT {
@@ -18,14 +20,27 @@ public class MonitorIoT {
         try {
             DataBaseManager db = new DataBaseManager();
 
-            HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0",8082), 0);
+            Properties props = new Properties();
+            try (InputStream input = DataBaseManager.class.getClassLoader()
+                    .getResourceAsStream("config.properties")) {
+                props.load(input);
+            } catch (IOException e) {
+                throw new RuntimeException("No se pudo cargar config.properties", e);
+            }
+            int port = Integer.parseInt(props.getProperty("apiweb.port"));
+            String ip = props.getProperty("apiweb.ip");
+            String contextpath = props.getProperty("apiweb.contextPath");
+            String topic1 = props.getProperty("mqtt.topic1");
+            String topic2 = props.getProperty("mqtt.topic2");
 
-            server.createContext("/api/temperaturas", exchange -> {
+            HttpServer server = HttpServer.create(new InetSocketAddress(ip,port), 0);
+
+            server.createContext(contextpath + "/temperaturas", exchange -> {
                 String json = db.getTempyHumJson();
                 sendResponse(exchange, json);
             });
 
-            server.createContext("/api/luz", exchange -> {
+            server.createContext(contextpath + "/luz", exchange -> {
                 String json = db.getLuzJson();
                 sendResponse(exchange, json);
             });
@@ -36,8 +51,8 @@ public class MonitorIoT {
 
             MqttManager mqtt = new MqttManager(db);
             mqtt.conect();
-            mqtt.subscribe("tempyhum",0);
-            mqtt.subscribe("luz",0);
+            mqtt.subscribe(topic1,0);
+            mqtt.subscribe(topic2,0);
 
             Object lock = new Object();
             synchronized (lock) {
