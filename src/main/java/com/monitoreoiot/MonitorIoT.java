@@ -38,7 +38,13 @@ public class MonitorIoT {
 
             server.setExecutor(null);
             server.start();
-            System.out.println("API corriendo en http://" + Config.getServerIp() + ":8082");
+            String hostIp = "desconocida";
+            try {
+                hostIp = InetAddress.getByName("host.docker.internal").getHostAddress();
+            } catch (Exception e) {
+                System.err.println("No se pudo resolver host.docker.internal: " + e.getMessage());
+            }
+            System.out.println("API corriendo en http://" + hostIp + ":" + Config.getServerPort());
 
             MqttManager mqtt = new MqttManager(db);
             mqtt.conect();
