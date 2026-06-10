@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: backend.Dockerfile
+      no_cache: true
     ports:
       - "8082:8080"
     restart: unless-stopped
@@ -11,6 +12,7 @@ services:
     build:
       context: .
       dockerfile: frontend.Dockerfile
+      no_cache: true
     ports:
       - "8081:80"
     restart: unless-stopped
