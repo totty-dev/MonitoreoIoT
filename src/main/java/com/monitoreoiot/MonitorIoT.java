@@ -38,7 +38,7 @@ public class MonitorIoT {
 
             server.setExecutor(null);
             server.start();
-            System.out.println("API corriendo en http://" + InetAddress.getLocalHost().getHostAddress() + ":8082");
+            System.out.println("API corriendo en http://" + Config.getServerIp() + ":8082");
 
             MqttManager mqtt = new MqttManager(db);
             mqtt.conect();
