@@ -1,7 +1,5 @@
 package com.monitoreoiot.config;
 
-import com.monitoreoiot.db.DataBaseManager;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
