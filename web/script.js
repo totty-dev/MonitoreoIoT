@@ -1,5 +1,5 @@
 // Configuración: la API está en el mismo host pero puerto 8082
-const API_BASE_URL = `http://${window.location.hostname}:8081`;
+const API_BASE_URL = `http://${window.location.hostname}:8082`;
 
 // Elementos del DOM
 const tempElement = document.getElementById('tempValue');
