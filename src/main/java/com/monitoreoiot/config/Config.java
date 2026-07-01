@@ -36,6 +36,10 @@ public class Config {
     public static String getMqttTopic2()  {
         return config.getProperty("MQTT_TOPIC2");
     }
+    public static int getMqttQos()            {
+        String qos = config.getProperty("MQTT_QOS");
+        return Integer.parseInt(qos);
+    }
     public static String getDbUrl()       {
         return config.getProperty("DB_URL");
     }
@@ -53,6 +57,6 @@ public class Config {
     }
     public static int getServerPort()     {
         String port = config.getProperty("SERVER_PORT");
-        return ((port != null) && (port.matches("\\d+"))) ? Integer.parseInt(port) : 8082;
+        return Integer.parseInt(port);
     }
 }

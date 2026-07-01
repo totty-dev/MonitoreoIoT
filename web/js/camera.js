@@ -1,12 +1,11 @@
-// IP fija del ESP32-CAM. Si el día de mañana cambia, solo hay que editar esta línea.
-const CAMERA_IP = '192.168.1.106';
-const CAMERA_STREAM_URL = `http://${CAMERA_IP}:81/stream`;
+const CAMERA_IP = windows.APP_CONFIG.CAMERA_IP;
+const CAMERA_STREAM_URL = windows.APP_CONFIG.CAMERA_STREAM_URL;
 
 const cameraImg = document.getElementById('cameraStream');
 const cameraStatus = document.getElementById('cameraStatus');
 
 let reconnectTimer = null;
-const RECONNECT_DELAY = 4000; // ms entre reintentos si se cae el stream
+const RECONNECT_DELAY = 4000;
 
 function setOnline() {
     cameraStatus.textContent = '● en vivo';
@@ -19,12 +18,11 @@ function setOffline() {
 }
 
 function reloadStream() {
-    // Forzamos recarga agregando un parámetro único, para evitar cache del navegador
     cameraImg.src = `${CAMERA_STREAM_URL}?t=${Date.now()}`;
 }
 
 function scheduleReconnect() {
-    if (reconnectTimer) return; // ya hay un reintento programado
+    if (reconnectTimer) return;
     reconnectTimer = setTimeout(() => {
         reconnectTimer = null;
         reloadStream();
@@ -40,5 +38,4 @@ cameraImg.addEventListener('error', () => {
     scheduleReconnect();
 });
 
-// Primera carga
 reloadStream();

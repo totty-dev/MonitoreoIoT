@@ -1,14 +1,11 @@
-// Configuración: la API está en el mismo host pero puerto 8082
-const API_BASE_URL = `http://${window.location.hostname}:8082`;
+const API_BASE_URL = windows.APP_CONFIG.API_BASE_URL;
 
-// Elementos del DOM
 const tempElement = document.getElementById('tempValue');
 const humElement = document.getElementById('humValue');
 const lightValueElement = document.getElementById('lightValue');
 const lightIconElement = document.getElementById('lightIcon');
 const lastUpdateElement = document.getElementById('lastUpdate');
 
-// Función para obtener datos de temperatura y humedad
 async function fetchTempHum() {
     try {
         const response = await fetch(`${API_BASE_URL}/temperaturas`);
@@ -16,7 +13,7 @@ async function fetchTempHum() {
         const data = await response.json();
 
         if (data && data.length > 0) {
-            const last = data[0]; // el último registro
+            const last = data[0];
             const temp = last.temperatura;
             const hum = last.humedad;
             tempElement.textContent = temp !== undefined ? temp.toFixed(1) : '--';
@@ -32,7 +29,6 @@ async function fetchTempHum() {
     }
 }
 
-// Función para obtener estado de la luz
 async function fetchLuz() {
     try {
         const response = await fetch(`${API_BASE_URL}/luz`);
@@ -61,19 +57,16 @@ async function fetchLuz() {
     }
 }
 
-// Actualizar la hora de la última actualización
 function updateTimestamp() {
     const now = new Date();
     const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     lastUpdateElement.textContent = timeStr;
 }
 
-// Función principal que se ejecuta cada 5 segundos
 async function refreshData() {
     await Promise.all([fetchTempHum(), fetchLuz()]);
     updateTimestamp();
 }
 
-// Inicializar y actualizar periódicamente
-refreshData(); // primera carga inmediata
+refreshData();
 setInterval(refreshData, 5000);

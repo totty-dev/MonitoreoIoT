@@ -4,13 +4,14 @@
 #include <SparkFun_APDS9960.h>
 #include "esp_camera.h"
 #include "esp_http_server.h"
+#include "config.h"
 
-const char* ssid        = "wifitotty2";
-const char* password    = "tomas3342";
-const char* mqtt_server = "192.168.1.107";
-const int   mqtt_port   = 1883;
-const char* topic_tempyhum = "tempyhum";
-const char* topic_luz      = "luz";
+const char* ssid        = WIFI_SSID;
+const char* password    = WIFI_PASSWORD;
+const char* mqtt_server = MQTT_HOST;
+const int   mqtt_port   = MQTT_PORT;
+const char* topic_tempyhum = MQTT_TOPIC1;
+const char* topic_luz      = MQTT_TOPIC2;
 
 #define SDA_PIN 12
 #define SCL_PIN 13

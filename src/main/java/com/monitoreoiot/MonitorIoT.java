@@ -36,8 +36,8 @@ public class MonitorIoT {
 
             MqttManager mqtt = new MqttManager(db);
             mqtt.conect();
-            mqtt.subscribe(Config.getMqttTopic1(),0);
-            mqtt.subscribe(Config.getMqttTopic2(),0);
+            mqtt.subscribe(Config.getMqttTopic1(),Config.getMqttQos());
+            mqtt.subscribe(Config.getMqttTopic2(),Config.getMqttQos());
 
             Object lock = new Object();
             synchronized (lock) {

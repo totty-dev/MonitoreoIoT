@@ -14,7 +14,9 @@ services:
       - MQTT_BROKER=
       - MQTT_TOPIC1=
       - MQTT_TOPIC2=
+      - QOS=
       - SERVER_PORT=
+      - SERVER_IP=
       - SERVER_CONTEXT_PATH=
     restart: unless-stopped
 
@@ -24,4 +26,8 @@ services:
       dockerfile: frontend.Dockerfile
     ports:
       - "8081:80"
+    environment:
+        - API_BASE_URL=
+        - CAMERA_IP=
+        - CAMERA_STREAM_URL=
     restart: unless-stopped
