@@ -1,4 +1,4 @@
-const API_BASE_URL = windows.APP_CONFIG.API_BASE_URL;
+const API_BASE_URL = window.APP_CONFIG.API_BASE_URL;
 
 const tempElement = document.getElementById('tempValue');
 const humElement = document.getElementById('humValue');
