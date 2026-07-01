@@ -1,4 +1,3 @@
-const CAMERA_IP = windows.APP_CONFIG.CAMERA_IP;
 const CAMERA_STREAM_URL = windows.APP_CONFIG.CAMERA_STREAM_URL;
 
 const cameraImg = document.getElementById('cameraStream');
