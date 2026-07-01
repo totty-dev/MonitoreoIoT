@@ -1,4 +1,4 @@
 window.APP_CONFIG = {
-    CAMERA_STREAM_URL: "${CAMERA_STREAM_URL}",
-    API_BASE_URL: "${API_BASE_URL}",
+    CAMERA_STREAM_URL: "http://192.168.1.101:81/stream",
+    API_BASE_URL: "http://192.168.1.107:8082",
 };
