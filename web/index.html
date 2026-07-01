@@ -43,6 +43,17 @@
         </div>
     </div>
 
+    <div class="camera-card">
+        <div class="camera-header">
+            <span class="card-icon">📷</span>
+            <span class="card-label">Cámara en vivo</span>
+            <span class="camera-status" id="cameraStatus">● conectando</span>
+        </div>
+        <div class="camera-wrapper">
+            <img id="cameraStream" src="http://192.168.1.106:81/stream" alt="Stream de la cámara ESP32-CAM">
+        </div>
+    </div>
+
     <div class="status-bar">
         <span>🔄 Actualización automática cada 5 segundos</span>
         <span class="last-update" id="lastUpdate">--:--:--</span>
@@ -54,5 +65,6 @@
 </div>
 
 <script src="script.js"></script>
+<script src="camera.js"></script>
 </body>
 </html>
