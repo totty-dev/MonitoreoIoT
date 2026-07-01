@@ -1,8 +1,6 @@
 package com.monitoreoiot.db;
 
 import com.monitoreoiot.config.Config;
-import com.monitoreoiot.model.Humedad;
-import com.monitoreoiot.model.Temperatura;
 
 import java.sql.*;
 import java.util.Properties;
@@ -31,13 +29,14 @@ public class DataBaseManager {
             conec.close();
         }
     }
-    public void insertTempyHum(Temperatura temp, Humedad hum){
+
+    public void insertTempYHum(float temp, float hum){
         String sql = "INSERT INTO tempyhum (temperatura, humedad, fecha) VALUES (?, ?, NOW())";
         try {
             this.conect();
             PreparedStatement ps = conec.prepareStatement(sql);
-            ps.setFloat(1, temp.getTemp());
-            ps.setFloat(2, hum.getHum());
+            ps.setFloat(1, temp);
+            ps.setFloat(2, hum);
             ps.executeUpdate();
             this.disconnect();
         }catch (SQLException e){
@@ -58,7 +57,7 @@ public class DataBaseManager {
         }
     }
 
-    public String getTempyHumJson(){
+    public String getTempYHumJson(){
         String sql = "SELECT temperatura, humedad, fecha FROM tempyhum ORDER BY fecha DESC LIMIT 1";
         StringBuilder sb = new StringBuilder("[");
         try {

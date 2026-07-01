@@ -2,13 +2,10 @@ package com.monitoreoiot.mqtt;
 
 import com.monitoreoiot.config.Config;
 import com.monitoreoiot.db.DataBaseManager;
-import com.monitoreoiot.model.Humedad;
-import com.monitoreoiot.model.Temperatura;
 import org.eclipse.paho.client.mqttv3.*;
 
 public class MqttManager{
     private final MqttClient mqttClient;
-    private final MqttMessage mqttMsg;
     private final DataBaseManager db;
 
     public MqttManager(DataBaseManager db) throws MqttException{
@@ -16,7 +13,6 @@ public class MqttManager{
         String mqttClientid = MqttClient.generateClientId();
         this.mqttClient = new MqttClient(mqttBroker, mqttClientid);
         this.db = db;
-        this.mqttMsg = new MqttMessage();
     }
 
     public void conect(){
@@ -41,9 +37,9 @@ public class MqttManager{
                     System.out.println("Received message: " + msg);
                     if (topic.equals(Config.getMqttTopic1())) {
                         String[] tempyhum = msg.split(",");
-                        Temperatura temp = new Temperatura(Float.parseFloat(tempyhum[0]));
-                        Humedad hum = new Humedad(Float.parseFloat(tempyhum[1]));
-                        db.insertTempyHum(temp,hum);
+                        float temp = Float.parseFloat(tempyhum[0]);
+                        float hum = Float.parseFloat(tempyhum[1]);
+                        db.insertTempYHum(temp,hum);
                     }
                     if (topic.equals(Config.getMqttTopic2())) {
                         db.insertLuz(msg);
@@ -65,12 +61,6 @@ public class MqttManager{
 
     public void subscribe(String topic, int qos) throws MqttException{
         mqttClient.subscribe(topic, qos);
-    }
-
-    public void publish(String topic,String msg, int qos) throws MqttException {
-        mqttMsg.setPayload(msg.getBytes());
-        mqttMsg.setQos(qos);
-        mqttClient.publish(topic, mqttMsg);
     }
 
     public void disconnect() throws MqttException{

@@ -22,7 +22,7 @@ public class MonitorIoT {
             HttpServer server = HttpServer.create(new InetSocketAddress(Config.getServerIp(), Config.getServerPort()), 0);
 
             server.createContext(contextpath + "/temperaturas", exchange -> {
-                String json = db.getTempyHumJson();
+                String json = db.getTempYHumJson();
                 sendResponse(exchange, json);
             });
 
