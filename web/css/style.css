@@ -94,52 +94,96 @@ header p {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;          /* Separación entre bloques */
+    gap: 0.6rem;
     min-height: 0;
 }
 
 .cards {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;            /* Más separación horizontal */
+    gap: 1rem;
     justify-content: center;
-    flex: 1 1 auto;       /* Ocupa el espacio disponible verticalmente */
-    align-content: center; /* Centra las tarjetas verticalmente si sobra espacio */
+    flex: 1 1 auto;
+    align-content: center;
 }
 
 .card {
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(10px);
     border-radius: 1.5rem;
-    padding: 1rem 1.2rem;  /* Más padding interior */
-    width: 200px;          /* Más anchas */
+    padding: 1rem 1.2rem;
+    width: 200px;
     text-align: center;
     border: 1px solid rgba(255,255,255,0.2);
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Footer siempre abajo */
+    min-height: 180px; /* Altura uniforme */
 }
+
 .card-icon {
     font-size: 1.6rem;
     margin-bottom: 0.2rem;
 }
+
 .card-label {
     font-size: 0.7rem;
     letter-spacing: 1.5px;
     color: rgba(255,255,255,0.7);
 }
+
 .card-value {
-    font-size: 2.2rem;     /* Números más grandes */
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0.2rem 0;
 }
+
 .card-unit {
     font-size: 0.7rem;
     color: rgba(255,255,255,0.6);
 }
+
 .card-footer {
     font-size: 0.6rem;
     padding-top: 0.3rem;
     border-top: 1px solid rgba(255,255,255,0.2);
     margin-top: 0.2rem;
     color: rgba(255,255,255,0.5);
+}
+
+/* Colores específicos por tipo */
+.temp-card .card-value {
+    color: #ff9f4a;
+}
+.hum-card .card-value {
+    color: #5fc3ff;
+}
+
+/* Ajuste para la tarjeta de luz */
+.light-card .card-value {
+    color: #f5c542;
+    text-shadow: 0 0 20px rgba(245, 197, 66, 0.25);
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    font-size: 1.6rem; /* Tamaño contenido */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 0.2rem;
+    max-width: 100%;
+}
+
+.light-card .card-value.apagada {
+    color: #8a8f9a;
+    text-shadow: none;
+}
+
+.light-card .card-icon.sol {
+    color: #f5c542;
+}
+.light-card .card-icon.luna {
+    color: #8a8f9a;
 }
 
 /* Cámara */
@@ -191,7 +235,7 @@ header p {
     background: rgba(0,0,0,0.4);
     border-radius: 1rem;
     overflow: hidden;
-    max-height: 35vh;      /* Un poco más grande */
+    max-height: 35vh;
 }
 
 .camera-wrapper img {
@@ -213,7 +257,7 @@ header p {
     color: rgba(255,255,255,0.7);
     font-size: 0.75rem;
     flex-shrink: 0;
-    margin-top: auto;      /* Empuja la barra hacia abajo */
+    margin-top: auto;
 }
 
 /* ----- FOOTER (común) ----- */
@@ -341,8 +385,9 @@ tbody td:first-child {
     .nav-link { font-size: 0.8rem; padding: 0.3rem 0.6rem; }
     header h1 { font-size: 1.3rem; }
     header p { font-size: 0.7rem; }
-    .card { width: 140px; padding: 0.5rem; }
+    .card { width: 140px; padding: 0.5rem; min-height: 140px; }
     .card-value { font-size: 1.5rem; }
+    .light-card .card-value { font-size: 1.2rem; }
     .camera-card { max-width: 100%; }
     .camera-wrapper { max-height: 25vh; }
     .filtros { flex-direction: column; align-items: stretch; gap: 0.5rem; padding: 0.8rem; }

@@ -5,6 +5,7 @@ const humElement = document.getElementById('humValue');
 const lightValueElement = document.getElementById('lightValue');
 const lightIconElement = document.getElementById('lightIcon');
 const lastUpdateElement = document.getElementById('lastUpdate');
+lightIconElement.className = 'card-icon sol';
 
 async function fetchTempHum() {
     try {
@@ -40,20 +41,31 @@ async function fetchLuz() {
             const luz = last.luz;
             if (luz === true || luz === 'true') {
                 lightValueElement.textContent = 'ENCENDIDA';
+                lightValueElement.classList.remove('apagada');
+                lightIconElement.className = 'card-icon sol'; // Cambia a sol
                 lightIconElement.textContent = '☀️';
-                lightIconElement.style.filter = 'drop-shadow(0 0 5px gold)';
+                lightIconElement.style.filter = 'drop-shadow(0 0 5px rgba(245,197,66,0.5))';
             } else {
                 lightValueElement.textContent = 'APAGADA';
+                lightValueElement.classList.add('apagada');
+                lightIconElement.className = 'card-icon luna'; // Cambia a luna
                 lightIconElement.textContent = '🌙';
                 lightIconElement.style.filter = 'none';
             }
         } else {
             lightValueElement.textContent = '--';
+            lightValueElement.classList.remove('apagada');
+            lightIconElement.className = 'card-icon'; // Vuelve a clase base
             lightIconElement.textContent = '💡';
+            lightIconElement.style.filter = 'none';
         }
     } catch (error) {
         console.error('Error al obtener estado de luz:', error);
         lightValueElement.textContent = 'Err';
+        lightValueElement.classList.remove('apagada');
+        lightIconElement.className = 'card-icon';
+        lightIconElement.textContent = '💡';
+        lightIconElement.style.filter = 'none';
     }
 }
 
