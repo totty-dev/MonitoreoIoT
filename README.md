@@ -145,23 +145,39 @@ SERVER_IP = 0.0.0.0
 SERVER_CONTEXT_PATH =
 ```
 
-### 2. Firmware ESP32 (`esp32/mqttpublisher/config.h`)
+### 2. Puertos (`docker-compose.yml`)
 
-```cpp
-#define WIFI_SSID     "..."
-#define WIFI_PASSWORD "..."
-#define MQTT_IP     "..."   // IP del broker MQTT
-#define MQTT_PORT     1883
-#define MQTT_TOPIC1   "..."
-#define MQTT_TOPIC2   "..."
+El mapeo de puertos también se define directo en el `docker-compose.yml` y hay que completarlo a mano (son placeholders de texto, no interpolación de variables):
+
+```yaml
+backend:
+  ports:
+    - "SERVER_PORT:SERVER_PORT"   # reemplazar por el puerto real, ej: "8082:8082"
+
+frontend:
+  ports:
+    - "FRONT_PORT:80"             # reemplazar por el puerto real, ej: "8081:80"
 ```
 
-### 3. Frontend (`web/js/config.js`)
+> Importante: `SERVER_PORT:SERVER_PORT` y `FRONT_PORT:80` no son variables de entorno, son texto literal a reemplazar directo en el archivo. El primer número es el puerto del host, el segundo el puerto interno del contenedor.
+
+### 3. Firmware ESP32 (`esp32/mqttpublisher/config.h`)
+
+```cpp
+#define WIFI_SSID     ""
+#define WIFI_PASSWORD ""
+#define MQTT_IP       ""   // IP del broker MQTT
+#define MQTT_PORT     1883
+#define MQTT_TOPIC1   ""
+#define MQTT_TOPIC2   ""
+```
+
+### 4. Frontend (`web/js/config.js`)
 
 ```js
 window.APP_CONFIG = {
     CAMERA_STREAM_URL: "http://<ip-esp32>:81/stream",
-    API_BASE_URL: "http://<ip-backend>:8082",
+    API_BASE_URL: "http://<ip-backend>:port",
 };
 ```
 
@@ -174,12 +190,12 @@ window.APP_CONFIG = {
 ```bash
 git clone <url-del-repo>
 cd MonitoreoIoT
-# completar variables en docker-compose.yml, en config.js del frontend y en config.h del ESP32
+# completar variables de entorno Y los puertos (SERVER_PORT:SERVER_PORT / FRONT_PORT:80) en docker-compose.yml
 docker compose up -d --build
 ```
 
-- Backend disponible en `http://<ip-backend>:SERVER_PORT`
-- Frontend disponible en `http://<ip-frontend>:FRONT_PORT`
+- Backend disponible en `http://localhost:8082`
+- Frontend disponible en `http://localhost:8081`
 
 ### Manual / desarrollo local
 
