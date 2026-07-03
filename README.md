@@ -69,13 +69,11 @@ MonitoreoIoT/
 │       └── generate-config.sh            # genera config.js real al iniciar el contenedor
 ├── src/
 │   └── main/
-│       ├── java/com/monitoreoiot/
-│       │   ├── MonitorIoT.java           # entry point + servidor HTTP
-│       │   ├── config/Config.java        # carga config.properties + ENV
-│       │   ├── db/DataBaseManager.java   # acceso a PostgreSQL
-│       │   └── mqtt/MqttManager.java     # cliente/suscriptor MQTT
-│       └── resources/
-│           └── config.properties         # valores por defecto (se pisan con ENV)
+│       └── java/com/monitoreoiot/
+│           ├── MonitorIoT.java           # entry point + servidor HTTP
+│           ├── config/Config.java        # lee toda la config directo de variables de entorno
+│           ├── db/DataBaseManager.java   # acceso a PostgreSQL
+│           └── mqtt/MqttManager.java     # cliente/suscriptor MQTT
 ├── esp32/
 │   └── mqttpublisher/
 │       ├── mqttpublisher.ino             # firmware ESP32-CAM
@@ -142,7 +140,10 @@ FRONT_PORT=
 ESP32_IP=
 ```
 
-`Config.java` lee estos valores primero desde `src/main/resources/config.properties` y los pisa con cualquier variable de entorno del mismo nombre — por eso alcanza con setearlas en Docker/Portainer sin tocar el `.properties`.
+`Config.java` lee **todo directo de variables de entorno**, ya no existe `config.properties`. Casi todas son obligatorias (si falta una, el backend rompe al arrancar), salvo dos que tienen default hardcodeado en el código si no las seteás:
+
+- `BACKEND_IP` → default `0.0.0.0`
+- `MQTT_QOS` → default `0`
 
 > El firmware del ESP32 (`esp32/mqttpublisher/config.h`) queda **fuera** de este esquema: no es un contenedor, así que sus variables (`WIFI_SSID`, `WIFI_PASSWORD`, `MQTT_IP`, `MQTT_TOPIC1`, `MQTT_TOPIC2`) se siguen editando a mano en el archivo antes de compilar y flashear el firmware.
 
@@ -178,13 +179,21 @@ Si después necesitás cambiar algún valor: volvé al stack → editá las Envi
 
 ### Manual / desarrollo local (sin Docker)
 
-1. Exportá las variables de entorno necesarias en tu terminal (las mismas de `.env.example`), o cargalas en `src/main/resources/config.properties` directamente.
+**Backend**: sí podés reusar el mismo `.env` — `Config.java` lee las variables de entorno igual que en Docker, no hace falta duplicar nada a mano.
+
+1. Exportá las variables del `.env` en tu terminal:
+   ```bash
+   export $(grep -v '^#' .env | xargs)
+   ```
 2. Compilá y corré el backend:
    ```bash
    mvn clean package -DskipTests
    java -jar target/app.jar
    ```
-3. Completá a mano `web/js/config.js` con las IPs/puertos reales (acá **no** hay generación automática — eso solo pasa dentro del contenedor de Docker).
+
+**Frontend**: acá el `.env` **no sirve** — `config.js` es un archivo estático que carga el navegador, y el reemplazo automático con `envsubst` solo ocurre dentro del contenedor Docker al iniciar. Sin Docker de por medio, ese paso nunca se ejecuta.
+
+3. Completá a mano `web/js/config.js` con las IPs/puertos reales.
 4. Abrí los `.html` de `web/` directo en el navegador, o serví esa carpeta con cualquier servidor estático.
 
 ---

@@ -1,62 +1,44 @@
 package com.monitoreoiot.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 public class Config {
-    public static Properties config;
 
-    static  {
-        Properties defaults = new Properties();
-        try (InputStream input = Config.class.getClassLoader().getResourceAsStream("config.properties")) {
-            defaults.load(input);
-        } catch (IOException e) {
-            throw new RuntimeException("No se pudo cargar config.properties", e);
-        }
-        config = new Properties(defaults);
+    private static String getEnv(String name) {
+        return System.getenv(name);
+    }
 
-        for (String envName : System.getenv().keySet()) {
-            String envValue = System.getenv(envName);
-            if (envValue != null && !envValue.trim().isEmpty()) {
-                config.setProperty(envName, envValue);
-                System.out.println("[Config] Usando ENV: " + envName + " = " + envValue);
-            } else {
-                System.out.println("[Config] Ignorando ENV vacía: " + envName);
-            }
-        }
+    private static String getEnv(String name, String defaultValue) {
+        String value = System.getenv(name);
+        return (value != null && !value.trim().isEmpty()) ? value : defaultValue;
     }
 
     public static String getMqttBroker()  {
-        return config.getProperty("MQTT_BROKER");
+        return getEnv("MQTT_BROKER");
     }
     public static String getMqttTopic1()  {
-        return config.getProperty("MQTT_TOPIC1");
+        return getEnv("MQTT_TOPIC1");
     }
     public static String getMqttTopic2()  {
-        return config.getProperty("MQTT_TOPIC2");
+        return getEnv("MQTT_TOPIC2");
     }
     public static int getMqttQos()            {
-        String qos = config.getProperty("MQTT_QOS");
-        return Integer.parseInt(qos);
+        return Integer.parseInt(getEnv("MQTT_QOS", "0"));
     }
     public static String getDbUrl()       {
-        return config.getProperty("DB_URL");
+        return getEnv("DB_URL");
     }
     public static String getDbUser()      {
-        return config.getProperty("DB_USER");
+        return getEnv("DB_USER");
     }
     public static String getDbPassword()  {
-        return config.getProperty("DB_PASSWORD");
+        return getEnv("DB_PASSWORD");
     }
     public static String getBackendIp()  {
-        return config.getProperty("BACKEND_IP");
+        return getEnv("BACKEND_IP", "0.0.0.0");
     }
     public static String getBackendContextPath()  {
-        return config.getProperty("BACKEND_CONTEXT_PATH");
+        return getEnv("BACKEND_CONTEXT_PATH", "");
     }
     public static int getBackendPort()     {
-        String port = config.getProperty("BACKEND_PORT");
-        return Integer.parseInt(port);
+        return Integer.parseInt(getEnv("BACKEND_PORT"));
     }
 }
