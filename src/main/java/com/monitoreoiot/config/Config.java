@@ -49,14 +49,14 @@ public class Config {
     public static String getDbPassword()  {
         return config.getProperty("DB_PASSWORD");
     }
-    public static String getServerIp()  {
-        return config.getProperty("SERVER_IP");
+    public static String getBackendIp()  {
+        return config.getProperty("BACKEND_IP");
     }
-    public static String getServerContextPath()  {
-        return config.getProperty("SERVER_CONTEXT_PATH");
+    public static String getBackendContextPath()  {
+        return config.getProperty("BACKEND_CONTEXT_PATH");
     }
-    public static int getServerPort()     {
-        String port = config.getProperty("SERVER_PORT");
+    public static int getBackendPort()     {
+        String port = config.getProperty("BACKEND_PORT");
         return Integer.parseInt(port);
     }
 }

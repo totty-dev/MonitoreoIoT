@@ -18,9 +18,9 @@ public class MonitorIoT {
         try {
             DataBaseManager db = new DataBaseManager();
 
-            String contextpath = Config.getServerContextPath();
+            String contextpath = Config.getBackendContextPath();
 
-            HttpServer server = HttpServer.create(new InetSocketAddress(Config.getServerIp(), Config.getServerPort()), 0);
+            HttpServer server = HttpServer.create(new InetSocketAddress(Config.getBackendIp(), Config.getBackendPort()), 0);
 
             server.createContext(contextpath + "/temperaturas", exchange -> {
                 String json = db.getTempYHumJson();

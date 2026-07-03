@@ -124,8 +124,8 @@ environment:
   - MQTT_TOPIC1=
   - MQTT_TOPIC2=
   - QOS=
-  - SERVER_PORT=
-  - SERVER_CONTEXT_PATH=
+  - BACKEND_PORT=
+  - BACKEND_CONTEXT_PATH=
 ```
 
 Valores por defecto actuales en `config.properties` (para correr local sin Docker):
@@ -140,9 +140,9 @@ DB_URL =
 DB_USER =
 DB_PASSWORD =
 
-SERVER_PORT =
-SERVER_IP = 0.0.0.0
-SERVER_CONTEXT_PATH =
+BACKEND_PORT =
+BACKEND_IP = 0.0.0.0
+BACKEND_CONTEXT_PATH =
 ```
 
 ### 2. Puertos (`docker-compose.yml`)
@@ -152,14 +152,14 @@ El mapeo de puertos también se define directo en el `docker-compose.yml` y hay 
 ```yaml
 backend:
   ports:
-    - "SERVER_PORT:SERVER_PORT"   # reemplazar por el puerto real, ej: "8082:8082"
+    - "BACKEND_PORT:BACKEND_PORT"   # reemplazar por el puerto real, ej: "8082:8082"
 
 frontend:
   ports:
-    - "FRONT_PORT:80"             # reemplazar por el puerto real, ej: "8081:80"
+    - "FRONT_PORT:80"               # reemplazar por el puerto real, ej: "8081:80"
 ```
 
-> Importante: `SERVER_PORT:SERVER_PORT` y `FRONT_PORT:80` no son variables de entorno, son texto literal a reemplazar directo en el archivo. El primer número es el puerto del host, el segundo el puerto interno del contenedor.
+> Importante: `BACKEND_PORT:BACKEND_PORT` y `FRONT_PORT:80` no son variables de entorno, son texto literal a reemplazar directo en el archivo. El primer número es el puerto del host, el segundo el puerto interno del contenedor.
 
 ### 3. Firmware ESP32 (`esp32/mqttpublisher/config.h`)
 
@@ -190,7 +190,7 @@ window.APP_CONFIG = {
 ```bash
 git clone <url-del-repo>
 cd MonitoreoIoT
-# completar variables de entorno Y los puertos (SERVER_PORT:SERVER_PORT / FRONT_PORT:80) en docker-compose.yml
+# completar variables de entorno Y los puertos (BACKEND_PORT:BACKEND_PORT / FRONT_PORT:80) en docker-compose.yml
 docker compose up -d --build
 ```
 
@@ -234,7 +234,7 @@ CREATE TABLE luz (
 
 ## 🔌 API REST
 
-Todas las rutas cuelgan del `SERVER_CONTEXT_PATH` configurado (vacío por defecto).
+Todas las rutas cuelgan del `BACKEND_CONTEXT_PATH` configurado (vacío por defecto).
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
