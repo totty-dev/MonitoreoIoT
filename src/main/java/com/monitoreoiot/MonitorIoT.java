@@ -9,6 +9,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.time.LocalDate;
 
 public class MonitorIoT {
     public static void main(String[] args) {
@@ -31,6 +32,24 @@ public class MonitorIoT {
                 sendResponse(exchange, json);
             });
 
+            server.createContext(contextpath + "/historico/tempyhum", exchange -> {
+                String start = getQueryParam(exchange, "start");
+                String end = getQueryParam(exchange, "end");
+                if (start == null || start.isEmpty()) start = LocalDate.now().minusDays(7).toString();
+                if (end == null || end.isEmpty()) end = LocalDate.now().toString();
+                String json = db.getTempYHumHistory(start, end);
+                sendResponse(exchange, json);
+            });
+
+            server.createContext(contextpath + "/historico/luz", exchange -> {
+                String start = getQueryParam(exchange, "start");
+                String end = getQueryParam(exchange, "end");
+                if (start == null || start.isEmpty()) start = LocalDate.now().minusDays(7).toString();
+                if (end == null || end.isEmpty()) end = LocalDate.now().toString();
+                String json = db.getLuzHistory(start, end);
+                sendResponse(exchange, json);
+            });
+
             server.setExecutor(null);
             server.start();
 
@@ -45,6 +64,7 @@ public class MonitorIoT {
             }
 
             mqtt.disconnect();
+            db.disconnect();
             server.stop(0);
 
         } catch (MqttException e) {
@@ -64,5 +84,15 @@ public class MonitorIoT {
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(bytes);
         }
+    }
+
+    private static String getQueryParam(HttpExchange exchange, String key) {
+        String query = exchange.getRequestURI().getQuery();
+        if (query == null) return null;
+        for (String param : query.split("&")) {
+            String[] pair = param.split("=");
+            if (pair.length == 2 && pair[0].equals(key)) return pair[1];
+        }
+        return null;
     }
 }

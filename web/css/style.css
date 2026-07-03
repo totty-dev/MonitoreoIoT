@@ -52,6 +52,34 @@ header p {
     opacity: 0.8;
 }
 
+.navbar {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    background: rgba(255,255,255,0.05);
+    padding: 0.6rem 1.2rem;
+    border-radius: 2rem;
+    backdrop-filter: blur(5px);
+}
+.nav-link {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 1.5rem;
+    transition: all 0.3s ease;
+}
+.nav-link:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+.nav-link.active {
+    background: rgba(255,255,255,0.15);
+    color: white;
+}
+
 .cards {
     display: flex;
     flex-wrap: wrap;

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial IoT</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/historial.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <!-- Navegación -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-link">📊 Dashboard</a>
+        <span class="nav-link active">📜 Historial</span>
+    </nav>
+
+    <header>
+        <h1>📜 Historial de Datos</h1>
+        <p>Filtra por rango de fechas y tipo de sensor</p>
+    </header>
+
+    <!-- Filtros -->
+    <div class="filtros">
+        <div class="filtro-grupo">
+            <label for="tipo">Tipo:</label>
+            <select id="tipo">
+                <option value="tempyhum">Temperatura y Humedad</option>
+                <option value="luz">Luz (encendido/apagado)</option>
+            </select>
+        </div>
+        <div class="filtro-grupo">
+            <label for="fechaInicio">Desde:</label>
+            <input type="date" id="fechaInicio">
+        </div>
+        <div class="filtro-grupo">
+            <label for="fechaFin">Hasta:</label>
+            <input type="date" id="fechaFin">
+        </div>
+        <button id="btnFiltrar">🔍 Filtrar</button>
+    </div>
+
+    <!-- Tabla de resultados -->
+    <div class="tabla-wrapper">
+        <table id="tablaHistorial">
+            <thead>
+            <tr id="cabeceraTabla">
+                <th>Fecha</th>
+                <th>Temperatura (°C)</th>
+                <th>Humedad (%)</th>
+                <th>Luz</th>
+            </tr>
+            </thead>
+            <tbody id="cuerpoTabla">
+            <tr><td colspan="4">Cargando datos...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        <p>Historial actualizado con filtros seleccionados</p>
+    </footer>
+</div>
+<script src="js/config.js"></script>
+<script src="js/historial.js"></script>
+</body>
+</html>
