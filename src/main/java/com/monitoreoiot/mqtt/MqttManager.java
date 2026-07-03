@@ -32,7 +32,7 @@ public class MqttManager{
         if (mqttClient.isConnected()) {
             mqttClient.setCallback(new MqttCallback() {
                 @Override
-                public void messageArrived(String topic, MqttMessage message) throws Exception {
+                public void messageArrived(String topic, MqttMessage message){
                     String msg = new String(message.getPayload());
                     System.out.println("Received message: " + msg);
                     if (topic.equals(Config.getMqttTopic1())) {
