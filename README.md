@@ -1,6 +1,8 @@
 # 🌦️ MonitoreoIoT — Estación Ambiental IoT
 
-Sistema de monitoreo ambiental compuesto por un **ESP32-CAM**, un **backend en Java**, un **broker MQTT**, una base de datos **PostgreSQL** y un **frontend web**. Registra temperatura, humedad y nivel de luz, expone los datos mediante una API REST propia y permite ver el historial con filtros por fecha, además de un stream de cámara en vivo.
+Sistema de monitoreo ambiental compuesto por un **ESP32-CAM**, un **backend en Java**, un broker **MQTT**, una base de datos **PostgreSQL** y un **frontend web**. Registra temperatura, humedad y nivel de luz, expone los datos mediante una API REST propia y permite ver el historial con filtros por fecha, además de un stream de cámara en vivo.
+
+Toda la configuración (credenciales de DB, broker MQTT, puertos, URLs del frontend) se maneja por **variables de entorno**, sin nada hardcodeado en el código — pensado para desplegarse como Stack en Portainer.
 
 ---
 
@@ -10,14 +12,15 @@ Sistema de monitoreo ambiental compuesto por un **ESP32-CAM**, un **backend en J
 - [Estructura del proyecto](#-estructura-del-proyecto)
 - [Stack tecnológico](#-stack-tecnológico)
 - [Requisitos previos](#-requisitos-previos)
-- [Configuración](#-configuración)
-- [Puesta en marcha](#-puesta-en-marcha)
-  - [Con Docker (recomendado)](#con-docker-recomendado)
+- [Configuración por variables de entorno](#-configuración-por-variables-de-entorno)
+- [Despliegue](#-despliegue)
+  - [Con Docker Compose](#con-docker-compose)
+  - [Como Stack en Portainer](#como-stack-en-portainer)
   - [Manual / desarrollo local](#manual--desarrollo-local)
+- [Cómo se arma el config.js del frontend](#-cómo-se-arma-el-configjs-del-frontend)
 - [Base de datos](#-base-de-datos)
 - [API REST](#-api-rest)
 - [ESP32](#-esp32)
-- [Frontend](#-frontend)
 - [Notas y pendientes](#-notas-y-pendientes)
 
 ---
@@ -29,24 +32,25 @@ ESP32-CAM (DHT11 + APDS9960 + cámara OV2640)
         │  publica por MQTT (temp/hum y luz)
         │  sirve stream MJPEG en puerto 81
         ▼
-Broker MQTT (Mosquitto u otro)
+Broker MQTT (externo, ej. Mosquitto)
         │
         ▼
 Backend Java (suscriptor MQTT + servidor HTTP embebido)
         │  guarda lecturas
         ▼
-PostgreSQL (tablas `clima` y `luz`)
+PostgreSQL (externo) — tablas `clima` y `luz`
         ▲
         │  consultas vía API REST
         │
-Frontend web (HTML / CSS / JS puro, servido con Nginx)
+Frontend web (Nginx, config.js generado en runtime)
 ```
 
-- **ESP32-CAM**: lee temperatura/humedad (DHT11) y luz ambiente (APDS9960), publica por MQTT y expone el stream de video en `:81/stream`.
-- **Backend (Java 17 + Maven)**: se suscribe a los tópicos MQTT con Eclipse Paho, persiste las lecturas en PostgreSQL y expone una API REST propia con `com.sun.net.httpserver.HttpServer` (sin frameworks externos).
-- **PostgreSQL**: almacena el historial en dos tablas, `clima` (temperatura/humedad) y `luz`.
-- **Frontend**: dashboard y vista de historial en HTML/CSS/JS vanilla, consumen la API del backend y el stream de la cámara directamente.
-- **Docker Compose**: levanta `backend` (puerto 8082) y `frontend` (puerto 8081 → Nginx).
+- **ESP32-CAM**: lee temperatura/humedad (DHT11) y luz ambiente (APDS9960), publica por MQTT y expone el stream de video en `:81/stream`. Firmware totalmente aparte del stack Docker (se flashea desde el Arduino IDE).
+- **Backend (Java 17 + Maven)**: se suscribe a los tópicos MQTT con Eclipse Paho, persiste las lecturas en PostgreSQL y expone una API REST propia con `com.sun.net.httpserver.HttpServer` (sin frameworks externos). Toda su config sale de variables de entorno.
+- **PostgreSQL**: instancia externa (no corre dentro del stack), con dos tablas: `clima` (temperatura/humedad) y `luz`.
+- **Broker MQTT**: externo también (ej. Mosquitto en el host o en otro contenedor), el backend solo necesita su URL.
+- **Frontend**: dashboard y vista de historial en HTML/CSS/JS vanilla servidos con Nginx. Su `config.js` **no es un archivo estático fijo**: se genera al iniciar el contenedor a partir de variables de entorno (ver [sección dedicada](#-cómo-se-arma-el-configjs-del-frontend)).
+- **Docker Compose**: levanta únicamente `backend` y `frontend`; DB y broker MQTT quedan afuera del stack, apuntados por IP/URL.
 
 ---
 
@@ -57,26 +61,31 @@ MonitoreoIoT/
 ├── docker-compose.yml
 ├── backend.Dockerfile
 ├── frontend.Dockerfile
+├── .env.example                          # referencia de todas las variables a completar
 ├── pom.xml
+├── docker/
+│   └── frontend/
+│       ├── config.js.template            # template con placeholders ${VAR}
+│       └── generate-config.sh            # genera config.js real al iniciar el contenedor
 ├── src/
 │   └── main/
 │       ├── java/com/monitoreoiot/
-│       │   ├── MonitorIoT.java          # entry point + servidor HTTP
-│       │   ├── config/Config.java       # carga config.properties + ENV
-│       │   ├── db/DataBaseManager.java  # acceso a PostgreSQL
-│       │   └── mqtt/MqttManager.java    # cliente/suscriptor MQTT
+│       │   ├── MonitorIoT.java           # entry point + servidor HTTP
+│       │   ├── config/Config.java        # carga config.properties + ENV
+│       │   ├── db/DataBaseManager.java   # acceso a PostgreSQL
+│       │   └── mqtt/MqttManager.java     # cliente/suscriptor MQTT
 │       └── resources/
-│           └── config.properties        # config por defecto (se puede pisar con ENV)
+│           └── config.properties         # valores por defecto (se pisan con ENV)
 ├── esp32/
 │   └── mqttpublisher/
-│       ├── mqttpublisher.ino            # firmware ESP32-CAM
-│       └── config.h                     # credenciales WiFi / MQTT del dispositivo
+│       ├── mqttpublisher.ino             # firmware ESP32-CAM
+│       └── config.h                      # credenciales WiFi / MQTT del dispositivo (edición manual)
 └── web/
-    ├── index.html                       # dashboard
-    ├── historial.html                   # historial con filtros
+    ├── index.html                        # dashboard
+    ├── historial.html                    # historial con filtros
     ├── css/style.css
     └── js/
-        ├── config.js                    # URLs de API y stream de cámara
+        ├── config.js                     # se reemplaza en runtime dentro del contenedor, ver nota
         ├── script.js
         ├── camera.js
         └── historial.js
@@ -89,113 +98,82 @@ MonitoreoIoT/
 | Capa       | Tecnología |
 |------------|------------|
 | Firmware   | ESP32-CAM (Arduino, `WiFi.h`, `PubSubClient`, `SparkFun_APDS9960`, `esp_camera`) |
-| Mensajería | MQTT (broker Mosquitto u otro compatible) |
+| Mensajería | MQTT (broker externo, ej. Mosquitto) |
 | Backend    | Java 17, Maven, Eclipse Paho MQTT Client, JDBC (driver PostgreSQL), `HttpServer` nativo de la JDK |
-| Base de datos | PostgreSQL |
-| Frontend   | HTML5, CSS3, JavaScript vanilla |
-| Infraestructura | Docker + Docker Compose (backend con Maven/Eclipse Temurin, frontend con Nginx alpine) |
+| Base de datos | PostgreSQL (externa) |
+| Frontend   | HTML5, CSS3, JavaScript vanilla, Nginx (alpine) con templating vía `envsubst` |
+| Infraestructura | Docker + Docker Compose / Portainer (deploy tipo Stack desde repositorio) |
 
 ---
 
 ## ✅ Requisitos previos
 
-- Docker y Docker Compose (para el despliegue recomendado)
+- Docker y Docker Compose (o Portainer, para el despliegue como Stack)
 - Java 17 y Maven (solo si vas a compilar/correr el backend sin Docker)
-- Un broker MQTT accesible (Mosquitto, por ejemplo), en el host o en otro contenedor
-- Una instancia de PostgreSQL con las tablas `clima` y `luz` (ver [Base de datos](#-base-de-datos))
+- Un broker MQTT accesible (Mosquitto, por ejemplo)
+- Una instancia de PostgreSQL con las tablas `clima` y `luz` ya creadas (ver [Base de datos](#-base-de-datos))
 - Placa ESP32-CAM (AI-Thinker) con sensor DHT11 y APDS9960, y el IDE de Arduino con las librerías `PubSubClient` y `SparkFun_APDS9960` instaladas
 
 ---
 
-## ⚙️ Configuración
+## ⚙️ Configuración por variables de entorno
 
-> Esta sección documenta **dónde** vive cada configuración. Las credenciales y URLs de ejemplo del repo son placeholders/valores de desarrollo — ajustalas a tu entorno antes de correr el proyecto.
+Todas las variables están listadas en `.env.example`. Ninguna tiene valor real cargado en el repo — se completan al desplegar (en Portainer, en la sección **Environment variables** del Stack; con Docker Compose local, en un archivo `.env` en la raíz).
 
-### 1. Backend (`docker-compose.yml` / variables de entorno)
+```env
+# ---- PostgreSQL (externo) ----
+DB_URL=jdbc:postgresql://<ip-postgres>:5432/<nombre-db>
+DB_USER=
+DB_PASSWORD=
 
-El backend lee su configuración desde `src/main/resources/config.properties`, pero **cualquier variable de entorno con el mismo nombre la pisa** (ver `Config.java`). En `docker-compose.yml` ya están declaradas las variables a completar:
+# ---- MQTT (externo) ----
+MQTT_BROKER=tcp://<ip-broker>:1883
+MQTT_TOPIC1=
+MQTT_TOPIC2=
+MQTT_QOS=
 
-```yaml
-environment:
-  - DB_URL=
-  - DB_USER=
-  - DB_PASSWORD=
-  - MQTT_BROKER=
-  - MQTT_TOPIC1=
-  - MQTT_TOPIC2=
-  - QOS=
-  - BACKEND_PORT=
-  - BACKEND_CONTEXT_PATH=
+# ---- Backend ----
+BACKEND_PORT=
+BACKEND_IP=0.0.0.0
+BACKEND_CONTEXT_PATH=
+
+# ---- Frontend ----
+FRONT_PORT=
+ESP32_IP=
 ```
 
-Valores por defecto actuales en `config.properties` (para correr local sin Docker):
+`Config.java` lee estos valores primero desde `src/main/resources/config.properties` y los pisa con cualquier variable de entorno del mismo nombre — por eso alcanza con setearlas en Docker/Portainer sin tocar el `.properties`.
 
-```properties
-MQTT_BROKER = tcp://<ip-broker>:1883
-MQTT_TOPIC1 =
-MQTT_TOPIC2 =
-MQTT_QOS = 0
-
-DB_URL =
-DB_USER =
-DB_PASSWORD =
-
-BACKEND_PORT =
-BACKEND_IP = 0.0.0.0
-BACKEND_CONTEXT_PATH =
-```
-
-### 2. Puertos (`docker-compose.yml`)
-
-El mapeo de puertos también se define directo en el `docker-compose.yml` y hay que completarlo a mano (son placeholders de texto, no interpolación de variables):
-
-```yaml
-backend:
-  ports:
-    - "BACKEND_PORT:BACKEND_PORT"   # reemplazar por el puerto real, ej: "8082:8082"
-
-frontend:
-  ports:
-    - "FRONT_PORT:80"               # reemplazar por el puerto real, ej: "8081:80"
-```
-
-> Importante: `BACKEND_PORT:BACKEND_PORT` y `FRONT_PORT:80` no son variables de entorno, son texto literal a reemplazar directo en el archivo. El primer número es el puerto del host, el segundo el puerto interno del contenedor.
-
-### 3. Firmware ESP32 (`esp32/mqttpublisher/config.h`)
-
-```cpp
-#define WIFI_SSID     ""
-#define WIFI_PASSWORD ""
-#define MQTT_IP       ""   // IP del broker MQTT
-#define MQTT_PORT     1883
-#define MQTT_TOPIC1   ""
-#define MQTT_TOPIC2   ""
-```
-
-### 4. Frontend (`web/js/config.js`)
-
-```js
-window.APP_CONFIG = {
-    CAMERA_STREAM_URL: "http://<ip-esp32>:81/stream",
-    API_BASE_URL: "http://<ip-backend>:port",
-};
-```
+> El firmware del ESP32 (`esp32/mqttpublisher/config.h`) queda **fuera** de este esquema: no es un contenedor, así que sus variables (`WIFI_SSID`, `WIFI_PASSWORD`, `MQTT_IP`, `MQTT_TOPIC1`, `MQTT_TOPIC2`) se siguen editando a mano en el archivo antes de compilar y flashear el firmware.
 
 ---
 
-## 🚀 Puesta en marcha
+## 🚀 Despliegue
 
-### Con Docker (recomendado)
+### Con Docker Compose
 
 ```bash
 git clone <url-del-repo>
 cd MonitoreoIoT
-# completar variables de entorno Y los puertos (BACKEND_PORT:BACKEND_PORT / FRONT_PORT:80) en docker-compose.yml
+cp .env.example .env
+# completar los valores reales en .env
 docker compose up -d --build
 ```
 
-- Backend disponible en `http://localhost:8082`
-- Frontend disponible en `http://localhost:8081`
+- Backend disponible en `http://localhost:${BACKEND_PORT}`
+- Frontend disponible en `http://localhost:${FRONT_PORT}`
+
+### Como Stack en Portainer
+
+1. **Stacks → Add stack**
+2. Build method: **Repository** (no "Web editor" — el build necesita clonar `docker/` y los Dockerfiles del repo)
+  - Repository URL: la URL del repo
+  - Reference: `refs/heads/main`
+  - Compose path: `docker-compose.yml`
+3. En **Environment variables**, cargar cada variable de `.env.example` con su valor real.
+4. **Deploy the stack**.
+
+Para actualizar valores después del primer deploy: editar las Environment variables del stack y volver a hacer **Update the stack** — los contenedores no se actualizan solos, hay que redeployar.
 
 ### Manual / desarrollo local
 
@@ -203,11 +181,30 @@ docker compose up -d --build
 # Backend
 mvn clean package -DskipTests
 java -jar target/app.jar
+# (las variables de entorno se pueden exportar en la shell antes de correr el jar)
 
 # Frontend
 # servir la carpeta web/ con cualquier servidor estático,
-# o abrir directamente los .html en el navegador
+# o abrir directamente los .html — pero ojo con la nota de config.js más abajo
 ```
+
+---
+
+## 🧩 Cómo se arma el `config.js` del frontend
+
+El frontend necesita saber la IP del backend y del ESP32 sin tener esos valores fijos en el código. Para lograrlo sin agregar un framework, se usa `envsubst`:
+
+1. `docker/frontend/config.js.template` tiene placeholders:
+   ```js
+   window.APP_CONFIG = {
+       CAMERA_STREAM_URL: "http://${ESP32_IP}:81/stream",
+       API_BASE_URL: "http://${BACKEND_IP}:${BACKEND_PORT}",
+   };
+   ```
+2. `frontend.Dockerfile` copia ese template a la imagen y registra `docker/frontend/generate-config.sh` en `/docker-entrypoint.d/`, que es una carpeta que la imagen oficial de `nginx:alpine` ejecuta automáticamente al iniciar el contenedor (antes de levantar Nginx).
+3. Al arrancar el contenedor, ese script corre `envsubst` y genera el `web/js/config.js` real, reemplazando `${ESP32_IP}`, `${BACKEND_IP}` y `${BACKEND_PORT}` por los valores que le llegaron como variables de entorno del servicio `frontend` en el `docker-compose.yml`.
+
+> Nota: el `web/js/config.js` que está versionado en el repo (con los placeholders sin reemplazar) solo sirve como plantilla de referencia — dentro del contenedor se sobreescribe siempre al arrancar. Si abrís los `.html` directo en el navegador sin pasar por Docker, vas a ver esos placeholders literales; para probar el frontend suelto localmente conviene completar ese archivo a mano con IPs reales.
 
 ---
 
@@ -234,7 +231,7 @@ CREATE TABLE luz (
 
 ## 🔌 API REST
 
-Todas las rutas cuelgan del `BACKEND_CONTEXT_PATH` configurado (vacío por defecto).
+Todas las rutas cuelgan de `BACKEND_CONTEXT_PATH` (vacío por defecto).
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
@@ -253,19 +250,13 @@ Todas las respuestas son JSON y habilitan CORS (`Access-Control-Allow-Origin: *`
 - Publica al tópico `MQTT_TOPIC2` (`"true"`/`"false"`) cuando detecta un cambio de umbral de luz ambiente (>200 / ≤200) medido con el APDS9960.
 - Expone el stream MJPEG de la cámara en `http://<ip-esp32>:81/stream`.
 - Reconecta WiFi y MQTT automáticamente ante caídas de conexión.
-
----
-
-## 🖥️ Frontend
-
-- **`index.html`**: dashboard con tarjetas de temperatura, humedad y luz actualizadas periódicamente, más el stream de la cámara.
-- **`historial.html`**: consulta el histórico con filtro de rango de fechas y tipo de sensor.
-- Ambas vistas consumen `API_BASE_URL` y `CAMERA_STREAM_URL` definidos en `web/js/config.js`.
+- Configuración (`WIFI_SSID`, `WIFI_PASSWORD`, `MQTT_IP`, `MQTT_PORT`, `MQTT_TOPIC1`, `MQTT_TOPIC2`) en `esp32/mqttpublisher/config.h`, a completar antes de compilar el firmware.
 
 ---
 
 ## 📝 Notas y pendientes
 
-- Las variables de entorno/config (credenciales de WiFi, broker MQTT, base de datos, URLs del frontend) están dejadas como placeholders a propósito — quedan pendientes de completar según el entorno de despliegue.
+- El `.gitignore` del repo tiene contenido pegado por error (texto/markdown ajeno a reglas de gitignore) al principio del archivo — conviene limpiarlo para que no genere reglas de ignorado involuntarias.
 - No hay creación automática de esquema de base de datos; las tablas deben crearse a mano antes de levantar el backend.
 - El proyecto no incluye tests automatizados por el momento (`src/test` está vacío).
+- PostgreSQL y el broker MQTT quedan fuera del stack Docker a propósito (se asumen ya desplegados aparte); si en algún momento se quieren containerizar también, hay que sumarlos como servicios nuevos en `docker-compose.yml` y ajustar `DB_URL`/`MQTT_BROKER` para que apunten al nombre del servicio en vez de una IP externa.
