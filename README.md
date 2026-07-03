@@ -218,8 +218,8 @@ El backend asume un esquema PostgreSQL con dos tablas (no se crean automáticame
 ```sql
 CREATE TABLE clima (
     id          SERIAL PRIMARY KEY,
-    temperatura REAL NOT NULL,
-    humedad     REAL NOT NULL,
+    temperatura FLOAT NOT NULL,
+    humedad     FLOAT NOT NULL,
     fecha       TIMESTAMP NOT NULL
 );
 
