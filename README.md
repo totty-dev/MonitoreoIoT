@@ -194,8 +194,8 @@ cd MonitoreoIoT
 docker compose up -d --build
 ```
 
-- Backend disponible en `http://localhost:8082`
-- Frontend disponible en `http://localhost:8081`
+- Backend disponible en `http://localhost:BACKEND_PORT`
+- Frontend disponible en `http://localhost:FRONTEND_PORT`
 
 ### Manual / desarrollo local
 
