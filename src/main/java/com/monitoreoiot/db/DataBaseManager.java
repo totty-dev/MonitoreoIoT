@@ -39,7 +39,7 @@ public class DataBaseManager {
     }
 
     public void insertTempYHum(float temp, float hum){
-        String sql = "INSERT INTO tempyhum (temperatura, humedad, fecha) VALUES (?, ?, NOW())";
+        String sql = "INSERT INTO clima (temperatura, humedad, fecha) VALUES (?, ?, NOW())";
         try {
             PreparedStatement ps = conec.prepareStatement(sql);
             ps.setFloat(1, temp);
@@ -62,7 +62,7 @@ public class DataBaseManager {
     }
 
     public String getTempYHumJson(){
-        String sql = "SELECT temperatura, humedad, fecha FROM tempyhum ORDER BY fecha DESC LIMIT 1";
+        String sql = "SELECT temperatura, humedad, fecha FROM clima ORDER BY fecha DESC LIMIT 1";
         StringBuilder sb = new StringBuilder("[");
         try {
             Statement st = conec.createStatement();
@@ -104,7 +104,7 @@ public class DataBaseManager {
 
     public String getTempYHumHistory(String startDate, String endDate) {
         StringBuilder sb = new StringBuilder("[");
-        String sql = "SELECT temperatura, humedad, fecha FROM tempyhum WHERE fecha >= ? AND fecha <= ? ORDER BY fecha DESC";
+        String sql = "SELECT temperatura, humedad, fecha FROM clima WHERE fecha >= ? AND fecha <= ? ORDER BY fecha DESC";
         try {
             PreparedStatement ps = conec.prepareStatement(sql);
             ps.setTimestamp(1, Timestamp.valueOf(startDate + " 00:00:00"));
