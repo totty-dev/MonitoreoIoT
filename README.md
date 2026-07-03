@@ -194,8 +194,8 @@ cd MonitoreoIoT
 docker compose up -d --build
 ```
 
-- Backend disponible en `http://localhost:BACKEND_PORT`
-- Frontend disponible en `http://localhost:FRONTEND_PORT`
+- Backend disponible en `http://localhost:8082`
+- Frontend disponible en `http://localhost:8081`
 
 ### Manual / desarrollo local
 
@@ -218,8 +218,8 @@ El backend asume un esquema PostgreSQL con dos tablas (no se crean automáticame
 ```sql
 CREATE TABLE clima (
     id          SERIAL PRIMARY KEY,
-    temperatura FLOAT NOT NULL,
-    humedad     FLOAT NOT NULL,
+    temperatura DOUBLE PRECISION NOT NULL,
+    humedad     DOUBLE PRECISION NOT NULL,
     fecha       TIMESTAMP NOT NULL
 );
 
