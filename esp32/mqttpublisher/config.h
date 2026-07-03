@@ -1,6 +1,6 @@
-#define WIFI_SSID "wifitotty2"
-#define WIFI_PASSWORD "tomas3342"
-#define MQTT_HOST "192.168.1.107"
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
+#define MQTT_IP ""
 #define MQTT_PORT 1883
-#define MQTT_TOPIC1 "tempyhum"
-#define MQTT_TOPIC2 "luz"
+#define MQTT_TOPIC1 ""
+#define MQTT_TOPIC2 ""

@@ -8,7 +8,7 @@
 
 const char* ssid        = WIFI_SSID;
 const char* password    = WIFI_PASSWORD;
-const char* mqtt_server = MQTT_HOST;
+const char* mqtt_server = MQTT_IP;
 const int   mqtt_port   = MQTT_PORT;
 const char* topic_tempyhum = MQTT_TOPIC1;
 const char* topic_luz      = MQTT_TOPIC2;
