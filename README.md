@@ -131,7 +131,7 @@ environment:
 Valores por defecto actuales en `config.properties` (para correr local sin Docker):
 
 ```properties
-MQTT_BROKER = tcp://host.docker.internal:1883
+MQTT_BROKER = tcp://<ip-broker>:1883
 MQTT_TOPIC1 =
 MQTT_TOPIC2 =
 MQTT_QOS = 0
@@ -140,7 +140,7 @@ DB_URL =
 DB_USER =
 DB_PASSWORD =
 
-SERVER_PORT = 8080
+SERVER_PORT =
 SERVER_IP = 0.0.0.0
 SERVER_CONTEXT_PATH =
 ```
@@ -150,10 +150,10 @@ SERVER_CONTEXT_PATH =
 ```cpp
 #define WIFI_SSID     "..."
 #define WIFI_PASSWORD "..."
-#define MQTT_HOST     "..."   // IP del broker MQTT
+#define MQTT_IP     "..."   // IP del broker MQTT
 #define MQTT_PORT     1883
-#define MQTT_TOPIC1   "tempyhum"
-#define MQTT_TOPIC2   "luz"
+#define MQTT_TOPIC1   "..."
+#define MQTT_TOPIC2   "..."
 ```
 
 ### 3. Frontend (`web/js/config.js`)
