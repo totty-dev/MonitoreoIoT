@@ -14,9 +14,9 @@ Toda la configuración (credenciales de DB, broker MQTT, puertos, URLs del front
 - [Requisitos previos](#-requisitos-previos)
 - [Configuración por variables de entorno](#-configuración-por-variables-de-entorno)
 - [Despliegue](#-despliegue)
-  - [Con Docker Compose](#con-docker-compose)
-  - [Como Stack en Portainer](#como-stack-en-portainer)
-  - [Manual / desarrollo local](#manual--desarrollo-local)
+    - [Con Docker Compose](#con-docker-compose)
+    - [Como Stack en Portainer](#como-stack-en-portainer)
+    - [Manual / desarrollo local](#manual--desarrollo-local)
 - [Cómo se arma el config.js del frontend](#-cómo-se-arma-el-configjs-del-frontend)
 - [Base de datos](#-base-de-datos)
 - [API REST](#-api-rest)
@@ -152,41 +152,40 @@ ESP32_IP=
 
 ### Con Docker Compose
 
-```bash
-git clone <url-del-repo>
-cd MonitoreoIoT
-cp .env.example .env
-# completar los valores reales en .env
-docker compose up -d --build
-```
+1. Renombrá `.env.example` a `.env`.
+2. Completá **todas** las variables del `.env` con tus valores reales (DB, MQTT, puertos, IPs).
+3. Ejecutá:
+   ```bash
+   docker compose up -d --build
+   ```
+4. Listo. Docker Compose lee el `.env` solo (no hace falta pasarle nada aparte) y levanta backend + frontend con esos valores ya inyectados.
 
-- Backend disponible en `http://localhost:${BACKEND_PORT}`
-- Frontend disponible en `http://localhost:${FRONT_PORT}`
+- Backend queda en `http://localhost:<BACKEND_PORT>`
+- Frontend queda en `http://localhost:<FRONT_PORT>`
 
 ### Como Stack en Portainer
 
-1. **Stacks → Add stack**
-2. Build method: **Repository** (no "Web editor" — el build necesita clonar `docker/` y los Dockerfiles del repo)
-  - Repository URL: la URL del repo
-  - Reference: `refs/heads/main`
-  - Compose path: `docker-compose.yml`
-3. En **Environment variables**, cargar cada variable de `.env.example` con su valor real.
-4. **Deploy the stack**.
+1. **Stacks → Add stack**.
+2. Ponele un nombre y elegí **Repository** como build method (no "Web editor", porque necesita clonar `docker/` y los Dockerfiles del repo).
+3. Completá:
+    - Repository URL: la URL del repo
+    - Reference: `refs/heads/main`
+    - Compose path: `docker-compose.yml`
+4. Bajá hasta la sección **Environment variables** y ahí cargá, una por una, cada variable que figura en `.env.example` (nombre y valor real) — es el equivalente a llenar el `.env` pero desde la interfaz de Portainer.
+5. Apretá **Deploy the stack**. Portainer se encarga de clonar el repo, buildear las imágenes e inyectar esas variables — no hay ningún otro paso manual.
 
-Para actualizar valores después del primer deploy: editar las Environment variables del stack y volver a hacer **Update the stack** — los contenedores no se actualizan solos, hay que redeployar.
+Si después necesitás cambiar algún valor: volvé al stack → editá las Environment variables → **Update the stack**. Los contenedores no se actualizan solos, hay que redeployar.
 
-### Manual / desarrollo local
+### Manual / desarrollo local (sin Docker)
 
-```bash
-# Backend
-mvn clean package -DskipTests
-java -jar target/app.jar
-# (las variables de entorno se pueden exportar en la shell antes de correr el jar)
-
-# Frontend
-# servir la carpeta web/ con cualquier servidor estático,
-# o abrir directamente los .html — pero ojo con la nota de config.js más abajo
-```
+1. Exportá las variables de entorno necesarias en tu terminal (las mismas de `.env.example`), o cargalas en `src/main/resources/config.properties` directamente.
+2. Compilá y corré el backend:
+   ```bash
+   mvn clean package -DskipTests
+   java -jar target/app.jar
+   ```
+3. Completá a mano `web/js/config.js` con las IPs/puertos reales (acá **no** hay generación automática — eso solo pasa dentro del contenedor de Docker).
+4. Abrí los `.html` de `web/` directo en el navegador, o serví esa carpeta con cualquier servidor estático.
 
 ---
 
