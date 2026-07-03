@@ -50,7 +50,7 @@ async function cargarHistorial() {
         }
 
         if (data.length === 0) {
-            tablaBody.innerHTML = `<tr><td colspan="4">No hay registros en este rango.</td></tr>`;
+            tablaBody.innerHTML = `<tr><td colspan="4" class="sin-datos">📭 No hay registros en este rango.</td></tr>`;
             return;
         }
 
@@ -81,7 +81,7 @@ async function cargarHistorial() {
         tablaBody.innerHTML = html;
     } catch (error) {
         console.error('Error cargando historial:', error);
-        tablaBody.innerHTML = `<tr><td colspan="4">Error al cargar los datos.</td></tr>`;
+        tablaBody.innerHTML = `<tr><td colspan="4" class="sin-datos">❌ Error al cargar los datos.</td></tr>`;
     }
 }
 
