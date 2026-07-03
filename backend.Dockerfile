@@ -9,4 +9,4 @@ FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
 COPY --from=build /app/target/app.jar app.jar
 EXPOSE 8082
-ENTRYPOINT ["java", "--add-opens", "java.base/java.net=ALL-UNNAMED", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
