@@ -44,6 +44,20 @@ Mide **temperatura, humedad y luz**, muestra datos en tiempo real y guarda histo
 
 ## 🧩 Arquitectura
 
+ESP32 (DHT11 + APDS9960 + Cámara)
+│
+▼ (MQTT)
+Broker MQTT (Mosquitto)
+│
+▼ (Suscripción)
+Backend Java (HTTP API)
+│
+▼ (JDBC)
+PostgreSQL (Base de datos)
+│
+▼ (HTTP)
+Frontend Web (HTML + CSS + JS)
+
 - **ESP32**: publica datos MQTT (temp/hum y luz) y stream de cámara en puerto 81.
 - **Broker MQTT**: Mosquitto (puede estar en el host o en otro contenedor).
 - **Backend**: Java con Maven, suscribe a MQTT, guarda en PostgreSQL y expone API REST.
