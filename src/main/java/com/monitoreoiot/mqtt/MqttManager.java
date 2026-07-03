@@ -9,9 +9,10 @@ public class MqttManager{
     private final DataBaseManager db;
 
     public MqttManager(DataBaseManager db) throws MqttException{
-        String mqttBroker = Config.getMqttBroker();
+        String mqttIp = Config.getMqttIp();
+        String mqttPort = Config.getMqttPort();
         String mqttClientid = MqttClient.generateClientId();
-        this.mqttClient = new MqttClient(mqttBroker, mqttClientid);
+        this.mqttClient = new MqttClient("tcp://" + mqttIp + ":" + mqttPort, mqttClientid);
         this.db = db;
     }
 

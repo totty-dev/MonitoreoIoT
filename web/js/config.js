@@ -1,4 +1,4 @@
 window.APP_CONFIG = {
-    CAMERA_STREAM_URL: "http://<ip-esp32>:81/stream",
-    API_BASE_URL: "http://<ip-backend>:port",
+    CAMERA_STREAM_URL: "http://192.168.1.106:81/stream",
+    API_BASE_URL: "http://localhost:8082"
 };

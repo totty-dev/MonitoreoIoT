@@ -10,9 +10,11 @@ public class Config {
         String value = System.getenv(name);
         return (value != null && !value.trim().isEmpty()) ? value : defaultValue;
     }
-
-    public static String getMqttBroker()  {
-        return getEnv("MQTT_BROKER");
+    public static String getMqttIp()  {
+        return getEnv("MQTT_IP");
+    }
+    public static String getMqttPort()  {
+        return getEnv("MQTT_PORT");
     }
     public static String getMqttTopic1()  {
         return getEnv("MQTT_TOPIC1");

@@ -3,16 +3,13 @@ package com.monitoreoiot.db;
 import com.monitoreoiot.config.Config;
 
 import java.sql.*;
+import java.util.Locale;
 import java.util.Properties;
 
 public class DataBaseManager {
     private Connection conec;
 
     public DataBaseManager() {
-        this.conect();
-    }
-
-    private void conect(){
         Properties props = new Properties();
 
         String URL = Config.getDbUrl();
@@ -28,6 +25,7 @@ public class DataBaseManager {
             System.out.println("Error al insertar en DB: " + e.getMessage());
         }
     }
+
     public void disconnect(){
         try {
             if (conec != null) {
@@ -68,7 +66,7 @@ public class DataBaseManager {
             Statement st = conec.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
-                sb.append(String.format(
+                sb.append(String.format(Locale.US,
                         "{\"temperatura\":%.1f,\"humedad\":%.1f,\"fecha\":\"%s\"}",
                         rs.getFloat("temperatura"),
                         rs.getFloat("humedad"),
@@ -76,10 +74,10 @@ public class DataBaseManager {
                 ));
             }
         } catch (SQLException e) {
-            System.out.println("Error al insertar en DB: " + e.getMessage());
+            System.out.println("Error al obtener temperatura/humedad: " + e.getMessage());
         }
         sb.append("]");
-        return  sb.toString();
+        return sb.toString();
     }
 
     public String getLuzJson(){
@@ -89,17 +87,17 @@ public class DataBaseManager {
             Statement st = conec.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
-                sb.append(String.format(
+                sb.append(String.format(Locale.US,
                         "{\"luz\":%b,\"fecha\":\"%s\"}",
                         rs.getBoolean("luz"),
                         rs.getTimestamp("fecha").toString()
                 ));
             }
         } catch (SQLException e) {
-            System.out.println("Error al insertar en DB: " + e.getMessage());
+            System.out.println("Error al obtener luz: " + e.getMessage());
         }
         sb.append("]");
-        return  sb.toString();
+        return sb.toString();
     }
 
     public String getTempYHumHistory(String startDate, String endDate) {
@@ -112,7 +110,7 @@ public class DataBaseManager {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 if (sb.length() > 1) sb.append(",");
-                sb.append(String.format(
+                sb.append(String.format(Locale.US,
                         "{\"temperatura\":%.1f,\"humedad\":%.1f,\"fecha\":\"%s\"}",
                         rs.getFloat("temperatura"),
                         rs.getFloat("humedad"),
@@ -136,7 +134,7 @@ public class DataBaseManager {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 if (sb.length() > 1) sb.append(",");
-                sb.append(String.format(
+                sb.append(String.format(Locale.US,
                         "{\"luz\":%b,\"fecha\":\"%s\"}",
                         rs.getBoolean("luz"),
                         rs.getTimestamp("fecha").toString()

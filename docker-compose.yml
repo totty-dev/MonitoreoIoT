@@ -11,7 +11,8 @@ services:
       - DB_URL=${DB_URL}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - MQTT_BROKER=${MQTT_BROKER}
+      - MQTT_IP=${MQTT_IP}
+      - MQTT_PORT=${MQTT_PORT}
       - MQTT_TOPIC1=${MQTT_TOPIC1}
       - MQTT_TOPIC2=${MQTT_TOPIC2}
       - MQTT_QOS=${MQTT_QOS}
@@ -30,4 +31,5 @@ services:
       - ESP32_IP=${ESP32_IP}
       - BACKEND_IP=${BACKEND_IP}
       - BACKEND_PORT=${BACKEND_PORT}
+      - BACKEND_CONTEXT_PATH=${BACKEND_CONTEXT_PATH}
     restart: unless-stopped
