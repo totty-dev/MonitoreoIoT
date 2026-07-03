@@ -174,7 +174,7 @@ window.APP_CONFIG = {
 ```bash
 git clone <url-del-repo>
 cd MonitoreoIoT
-# completar variables en docker-compose.yml
+# completar variables en docker-compose.yml, en config.js del frontend y en config.h del ESP32
 docker compose up -d --build
 ```
 
