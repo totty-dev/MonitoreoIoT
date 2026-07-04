@@ -7,23 +7,39 @@ import java.util.Locale;
 import java.util.Properties;
 
 public class DataBaseManager {
-    private Connection conec;
+    private static Connection conec;
+    private static String url;
+    private static final Properties props = new Properties();
 
     public DataBaseManager() {
-        Properties props = new Properties();
-
-        String URL = Config.getDbUrl();
-        String USER = Config.getDbUser();
-        String PASSWORD = Config.getDbPassword();
-
-        props.setProperty("user", USER);
-        props.setProperty("password", PASSWORD);
-        props.setProperty("options", "-c TimeZone=UTC");
+        getConnectionProperties();
         try {
-            conec = DriverManager.getConnection(URL, props);
+            conec = DriverManager.getConnection(url, props);
         } catch (SQLException e) {
-            System.out.println("Error al insertar en DB: " + e.getMessage());
+            System.err.println("Error al Conectar DB: " + e.getMessage());
         }
+    }
+
+    private static void getConnectionProperties() {
+        url = Config.getDbUrl();
+        String user = Config.getDbUser();
+        String password = Config.getDbPassword();
+
+        if ((url == null || url.isEmpty()) && (user == null || user.isEmpty()) && (password == null || password.isEmpty())) {
+            throw new IllegalArgumentException("❌ DB_URL, DB_USER y DB_PASSWORD no están definidas. Revisa tu archivo .env");
+        }
+        if (url == null || url.isEmpty()) {
+            throw new IllegalArgumentException("❌ DB_URL no está definida. Revisa tu archivo .env");
+        }
+        if (user == null || user.isEmpty()) {
+            throw new IllegalArgumentException("❌ DB_USER no está definida. Revisa tu archivo .env");
+        }
+        if (password == null || password.isEmpty()) {
+            throw new IllegalArgumentException("❌ DB_PASSWORD no está definida. Revisa tu archivo .env");
+        }
+        props.setProperty("user", Config.getDbUser());
+        props.setProperty("password", Config.getDbPassword());
+        props.setProperty("options", "-c TimeZone=UTC");
     }
 
     public void disconnect(){
@@ -32,7 +48,7 @@ public class DataBaseManager {
                 conec.close();
             }
         } catch (SQLException e) {
-            System.out.println("Error al insertar en DB: " + e.getMessage());
+            System.err.println("Error al desconectar el DB: " + e.getMessage());
         }
     }
 
@@ -44,7 +60,7 @@ public class DataBaseManager {
             ps.setFloat(2, hum);
             ps.executeUpdate();
         }catch (SQLException e){
-            System.out.println("Error al insertar en DB: " + e.getMessage());
+            System.out.println("Error al insertar temp,hum en DB: " + e.getMessage());
         }
     }
 
@@ -55,7 +71,7 @@ public class DataBaseManager {
             ps.setBoolean(1, Boolean.parseBoolean(luz));
             ps.executeUpdate();
         }catch (SQLException e){
-            System.out.println("Error al insertar en DB: " + e.getMessage());
+            System.out.println("Error al insertar luz en DB: " + e.getMessage());
         }
     }
 

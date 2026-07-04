@@ -13,23 +13,19 @@ public class Config {
     }
 
     public static String getMqttIp() {
-        String ip = getEnv("MQTT_IP");
-        if (ip == null || ip.isEmpty()) {
-            System.err.println("⚠️  ADVERTENCIA: MQTT_IP no está definida en el .env");
-        }
-        return ip;
+        return getEnv("MQTT_IP");
     }
 
     public static String getMqttPort() {
-        return getEnv("MQTT_PORT", "1883");
+        return getEnv("MQTT_PORT");
     }
 
     public static String getMqttTopic1() {
-        return getEnv("MQTT_TOPIC1");
+        return getEnv("MQTT_TOPIC1", "clima");
     }
 
     public static String getMqttTopic2() {
-        return getEnv("MQTT_TOPIC2");
+        return getEnv("MQTT_TOPIC2", "luz");
     }
 
     public static int getMqttQos() {

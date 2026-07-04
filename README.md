@@ -66,7 +66,7 @@ MonitoreoIoT/
 ├── docker/
 │   └── frontend/
 │       ├── config.js.template            # template con placeholders ${VAR}
-│       └── generate-config.sh            # genera config.js real al iniciar el contenedor
+│       └── generate-config.sh            # genera config.js real al iniciar el contenedor o al iniciar con .bat/.sh
 ├── src/
 │   └── main/
 │       └── java/com/monitoreoiot/
@@ -125,7 +125,8 @@ DB_USER=
 DB_PASSWORD=
 
 # ---- MQTT (externo) ----
-MQTT_BROKER=tcp://<ip-broker>:1883
+MQTT_IP=
+MQTT_PORT=
 MQTT_TOPIC1=
 MQTT_TOPIC2=
 MQTT_QOS=
@@ -136,11 +137,12 @@ BACKEND_IP=0.0.0.0
 BACKEND_CONTEXT_PATH=
 
 # ---- Frontend ----
+FRONTEND_IP=
 FRONT_PORT=
 ESP32_IP=
 ```
 
-`Config.java` lee **todo directo de variables de entorno**, ya no existe `config.properties`. Casi todas son obligatorias (si falta una, el backend rompe al arrancar), salvo dos que tienen default hardcodeado en el código si no las seteás:
+`Config.java` lee **todo directo de variables de entorno**. Casi todas son obligatorias (si falta una, el backend rompe al arrancar), salvo dos que tienen default hardcodeado en el código si no las seteás:
 
 - `BACKEND_IP` → default `0.0.0.0`
 - `MQTT_QOS` → default `0`

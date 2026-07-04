@@ -5,7 +5,6 @@ import com.monitoreoiot.db.DataBaseManager;
 import com.monitoreoiot.mqtt.MqttManager;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -15,64 +14,22 @@ public class MonitorIoT {
     public static void main(String[] args) {
         java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("UTC"));
 
+        DataBaseManager db = new DataBaseManager();
+        MqttManager mqtt = new MqttManager(db);
+
+        mqtt.conect();
+        mqtt.subscribe(Config.getMqttTopic1(),Config.getMqttQos());
+        mqtt.subscribe(Config.getMqttTopic2(),Config.getMqttQos());
+
         try {
-            DataBaseManager db = new DataBaseManager();
-
-            String contextpath = Config.getBackendContextPath();
-
-            HttpServer server = HttpServer.create(new InetSocketAddress(Config.getBackendIp(), Config.getBackendPort()), 0);
-
-            server.createContext(contextpath + "/temperaturas", exchange -> {
-                String json = db.getTempYHumJson();
-                sendResponse(exchange, json);
-            });
-
-            server.createContext(contextpath + "/luz", exchange -> {
-                String json = db.getLuzJson();
-                sendResponse(exchange, json);
-            });
-
-            server.createContext(contextpath + "/historico/tempyhum", exchange -> {
-                String start = getQueryParam(exchange, "start");
-                String end = getQueryParam(exchange, "end");
-                if (start == null || start.isEmpty()) start = LocalDate.now().minusDays(7).toString();
-                if (end == null || end.isEmpty()) end = LocalDate.now().toString();
-                String json = db.getTempYHumHistory(start, end);
-                sendResponse(exchange, json);
-            });
-
-            server.createContext(contextpath + "/historico/luz", exchange -> {
-                String start = getQueryParam(exchange, "start");
-                String end = getQueryParam(exchange, "end");
-                if (start == null || start.isEmpty()) start = LocalDate.now().minusDays(7).toString();
-                if (end == null || end.isEmpty()) end = LocalDate.now().toString();
-                String json = db.getLuzHistory(start, end);
-                sendResponse(exchange, json);
-            });
-
-            server.setExecutor(null);
-            server.start();
-
-            MqttManager mqtt = new MqttManager(db);
-            mqtt.conect();
-            mqtt.subscribe(Config.getMqttTopic1(),Config.getMqttQos());
-            mqtt.subscribe(Config.getMqttTopic2(),Config.getMqttQos());
-
-            Object lock = new Object();
-            synchronized (lock) {
-                lock.wait();
-            }
-
+            startHttpServer(db);
+        }catch (IOException e) {
+            System.err.println("Error creando serverAPI: " + e.getMessage());
+        }catch (InterruptedException e) {
+            System.err.println("Error Interrupted: " + e.getMessage());
+        }finally {
             mqtt.disconnect();
             db.disconnect();
-            server.stop(0);
-
-        } catch (MqttException e) {
-            System.out.println("Error Mqtt: " + e.getMessage());
-        } catch (IOException e) {
-            System.out.println("Error IO: " + e.getMessage());
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -94,5 +51,47 @@ public class MonitorIoT {
             if (pair.length == 2 && pair[0].equals(key)) return pair[1];
         }
         return null;
+    }
+
+    private static void startHttpServer(DataBaseManager db) throws IOException, InterruptedException {
+        HttpServer server = HttpServer.create(new InetSocketAddress(Config.getBackendIp(), Config.getBackendPort()), 0);
+
+        String contextpath = Config.getBackendContextPath();
+        server.createContext(contextpath + "/temperaturas", exchange -> {
+            String json = db.getTempYHumJson();
+            sendResponse(exchange, json);
+        });
+
+        server.createContext(contextpath + "/luz", exchange -> {
+            String json = db.getLuzJson();
+            sendResponse(exchange, json);
+        });
+
+        server.createContext(contextpath + "/historico/tempyhum", exchange -> {
+            String start = getQueryParam(exchange, "start");
+            String end = getQueryParam(exchange, "end");
+            if (start == null || start.isEmpty()) start = LocalDate.now().minusDays(7).toString();
+            if (end == null || end.isEmpty()) end = LocalDate.now().toString();
+            String json = db.getTempYHumHistory(start, end);
+            sendResponse(exchange, json);
+        });
+
+        server.createContext(contextpath + "/historico/luz", exchange -> {
+            String start = getQueryParam(exchange, "start");
+            String end = getQueryParam(exchange, "end");
+            if (start == null || start.isEmpty()) start = LocalDate.now().minusDays(7).toString();
+            if (end == null || end.isEmpty()) end = LocalDate.now().toString();
+            String json = db.getLuzHistory(start, end);
+            sendResponse(exchange, json);
+        });
+
+        server.setExecutor(null);
+        server.start();
+
+        Object lock = new Object();
+        synchronized (lock) {
+            lock.wait();
+        }
+        server.stop(0);
     }
 }
