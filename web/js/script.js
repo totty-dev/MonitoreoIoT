@@ -39,7 +39,7 @@ async function fetchLuz() {
         if (data && data.length > 0) {
             const last = data[0];
             const luz = last.luz;
-            if (luz === true || luz === 'true') {
+            if (luz === true) {
                 lightValueElement.textContent = 'ENCENDIDA';
                 lightValueElement.classList.remove('apagada');
                 lightIconElement.className = 'card-icon sol'; // Cambia a sol
