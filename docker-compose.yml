@@ -29,7 +29,7 @@ services:
       - "${FRONT_PORT}:80"
     environment:
       - ESP32_IP=${ESP32_IP}
-      - BACKEND_IP=${BACKEND_IP}
+      - MQTT_IP=${MQTT_IP}
       - BACKEND_PORT=${BACKEND_PORT}
       - BACKEND_CONTEXT_PATH=${BACKEND_CONTEXT_PATH}
     restart: unless-stopped
