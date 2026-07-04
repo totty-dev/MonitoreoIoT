@@ -17,7 +17,7 @@ public class Config {
     }
 
     public static String getMqttPort() {
-        return getEnv("MQTT_PORT");
+        return getEnv("MQTT_PORT", "1883");
     }
 
     public static String getMqttTopic1() {
